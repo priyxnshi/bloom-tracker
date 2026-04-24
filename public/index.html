@@ -1,0 +1,1690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌸 Bloom - Menstrual Health Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #FF6B9D;
+            --secondary: #FEC5E5;
+            --accent: #FF8FB1;
+            --dark: #2D2D2D;
+            --light: #FFF5F9;
+            --menstrual: #FF6B9D;
+            --follicular: #A8E6CF;
+            --ovulation: #FFD93D;
+            --luteal: #C7CEEA;
+            --shadow: 0 8px 24px rgba(255, 107, 157, 0.15);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #FFF5F9 0%, #FFE5EE 100%);
+            color: var(--dark);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            background: white;
+            padding: 20px;
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .tab-btn {
+            flex: 1;
+            min-width: 120px;
+            padding: 15px 20px;
+            background: var(--light);
+            border: 2px solid transparent;
+            border-radius: 16px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            color: var(--dark);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tab-btn::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 3px;
+            background: var(--primary);
+            transform: translateX(-50%);
+            transition: width 0.3s ease;
+        }
+
+        .tab-btn:hover {
+            background: var(--secondary);
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(255, 107, 157, 0.2);
+        }
+
+        .tab-btn:hover::after {
+            width: 80%;
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(255, 107, 157, 0.3);
+        }
+
+        .tab-btn.active::after {
+            width: 0;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+        }
+
+        .card h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .phase-display {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .phase-card {
+            padding: 20px;
+            border-radius: 20px;
+            text-align: center;
+            transition: var(--transition);
+            color: white;
+        }
+
+        .phase-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.15);
+        }
+
+        .phase-card.menstrual { background: linear-gradient(135deg, #FF6B9D 0%, #FF8FB1 100%); }
+        .phase-card.follicular { background: linear-gradient(135deg, #A8E6CF 0%, #88D4AB 100%); }
+        .phase-card.ovulation { background: linear-gradient(135deg, #FFD93D 0%, #FFC837 100%); }
+        .phase-card.luteal { background: linear-gradient(135deg, #C7CEEA 0%, #B4BDDC 100%); }
+
+        .phase-card h3 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #E0E0E0;
+            border-radius: 12px;
+            font-size: 1em;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--primary);
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .checkbox-item {
+            background: var(--light);
+            padding: 15px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 2px solid transparent;
+            user-select: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .checkbox-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(255, 107, 157, 0.1), rgba(255, 107, 157, 0.2));
+            transition: width 0.3s ease;
+        }
+
+        .checkbox-item:hover::before {
+            width: 100%;
+        }
+
+        .checkbox-item:hover {
+            background: var(--secondary);
+            border-color: var(--primary);
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(255, 107, 157, 0.2);
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: var(--primary);
+            flex-shrink: 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .checkbox-item label {
+            cursor: pointer;
+            flex: 1;
+            font-weight: 500;
+            position: relative;
+            z-index: 1;
+        }
+
+        .checkbox-item.checked {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            color: white;
+            border-color: var(--primary);
+            transform: scale(1.02);
+            box-shadow: 0 6px 16px rgba(255, 107, 157, 0.3);
+        }
+
+        .checkbox-item.checked:hover {
+            transform: scale(1.02) translateX(5px);
+        }
+
+        .btn {
+            padding: 12px 30px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: var(--transition);
+            margin: 5px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn:hover {
+            background: var(--accent);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 6px 20px rgba(255, 107, 157, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(-1px) scale(1.02);
+            box-shadow: 0 3px 10px rgba(255, 107, 157, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+            color: var(--dark);
+        }
+
+        .btn-secondary:hover {
+            background: var(--accent);
+            color: white;
+            box-shadow: 0 6px 20px rgba(255, 143, 177, 0.4);
+        }
+
+        .btn-secondary:active {
+            transform: translateY(-1px) scale(1.02);
+        }
+
+        .food-item, .yoga-item, .breathing-item {
+            background: var(--light);
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--primary);
+            transition: var(--transition);
+        }
+
+        .food-item:hover, .yoga-item:hover, .breathing-item:hover {
+            transform: translateX(5px);
+            box-shadow: var(--shadow);
+        }
+
+        .food-item h3, .yoga-item h3, .breathing-item h3 {
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .nutrients {
+            background: #FFF3E0;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-size: 0.9em;
+        }
+
+        .benefits {
+            color: #666;
+            font-style: italic;
+            margin-top: 10px;
+        }
+
+        .rec-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .rec-item {
+            background: var(--light);
+            padding: 20px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .rec-item h4 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .education-section {
+            background: var(--light);
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+        }
+
+        .education-section h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+
+        .education-section pre {
+            white-space: pre-wrap;
+            font-family: inherit;
+            line-height: 1.6;
+        }
+
+        .history-item {
+            background: var(--light);
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .history-date {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .tab-btn {
+                min-width: 100px;
+                padding: 12px 15px;
+                font-size: 0.9em;
+            }
+            
+            .rec-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🌸 Bloom</h1>
+            <p>Your Personal Menstrual Health Tracker</p>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="switchTab('tracker')">📊 Tracker</button>
+            <button class="tab-btn" onclick="switchTab('nutrition')">🥗 Nutrition</button>
+            <button class="tab-btn" onclick="switchTab('yoga')">🧘‍♀️ Yoga</button>
+            <button class="tab-btn" onclick="switchTab('breathing')">🌬️ Breathing</button>
+            <button class="tab-btn" onclick="switchTab('phase-guide')">📅 Phase Guide</button>
+            <button class="tab-btn" onclick="switchTab('education')">📚 Education</button>
+            <button class="tab-btn" onclick="switchTab('history')">📜 History</button>
+        </div>
+
+        <!-- Tracker Tab -->
+        <div id="tracker" class="tab-content active">
+            <div class="card">
+                <h2>📊 Daily Tracker</h2>
+                
+                <div class="phase-display">
+                    <div class="phase-card menstrual">
+                        <h3>🩸 Menstrual</h3>
+                        <p>Days 1-5</p>
+                    </div>
+                    <div class="phase-card follicular">
+                        <h3>🌱 Follicular</h3>
+                        <p>Days 6-13</p>
+                    </div>
+                    <div class="phase-card ovulation">
+                        <h3>✨ Ovulation</h3>
+                        <p>Days 14-15</p>
+                    </div>
+                    <div class="phase-card luteal">
+                        <h3>🌙 Luteal</h3>
+                        <p>Days 16-28</p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Day of Cycle (1-28):</label>
+                    <input type="number" id="dayOfCycle" min="1" max="28" value="1">
+                </div>
+
+                <div class="form-group">
+                    <label>Energy Level (1-10):</label>
+                    <input type="range" id="energyLevel" min="1" max="10" value="5" class="severity-slider">
+                    <span id="energyValue">5</span>
+                </div>
+
+                <div class="form-group">
+                    <label>Select Symptoms:</label>
+                    <div class="checkbox-group" id="symptomsGroup">
+                        <!-- Symptoms will be loaded here -->
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Select Moods:</label>
+                    <div class="checkbox-group" id="moodsGroup">
+                        <!-- Moods will be loaded here -->
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Notes:</label>
+                    <textarea id="notes" rows="3" placeholder="Any additional notes..."></textarea>
+                </div>
+
+                <button class="btn" onclick="generateReport()">Generate Report</button>
+                <button class="btn btn-secondary" onclick="undoAction()">↶ Undo</button>
+                <button class="btn btn-secondary" onclick="redoAction()">↷ Redo</button>
+                <div id="undoStatus" style="margin-top: 10px; color: var(--primary);"></div>
+
+                <div id="reportOutput" style="margin-top: 30px;"></div>
+            </div>
+        </div>
+
+        <!-- Nutrition Tab -->
+        <div id="nutrition" class="tab-content">
+            <div class="card">
+                <h2>🥗 Nutritional Guidance</h2>
+                
+                <div class="form-group">
+                    <label>Select Your Condition:</label>
+                    <select id="conditionSelect">
+                        <option value="Normal">Normal</option>
+                        <option value="PMS">PMS</option>
+                        <option value="Fatigue / Low Energy">Fatigue / Low Energy</option>
+                        <option value="Menstrual Discomfort">Menstrual Discomfort</option>
+                        <option value="Heavy Flow">Heavy Flow</option>
+                        <option value="Bloating">Bloating</option>
+                        <option value="Anxious">Anxious</option>
+                        <option value="Mood Swings">Mood Swings</option>
+                        <option value="Breakouts">Breakouts</option>
+                        <option value="Headaches">Headaches</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="vegetarianFilter"> Vegetarian Only
+                    </label>
+                    <label>
+                        <input type="checkbox" id="veganFilter"> Vegan Only
+                    </label>
+                </div>
+
+                <button class="btn" onclick="getFoodRecommendations()">Get Food Recommendations</button>
+
+                <div id="foodRecommendations" style="margin-top: 30px;"></div>
+            </div>
+        </div>
+
+        <!-- Yoga Tab -->
+        <div id="yoga" class="tab-content">
+            <div class="card">
+                <h2>🧘‍♀️ Yoga Recommendations</h2>
+                
+                <div class="form-group">
+                    <label>Select Phase:</label>
+                    <select id="yogaPhase">
+                        <option value="Menstrual">Menstrual</option>
+                        <option value="Follicular">Follicular</option>
+                        <option value="Ovulation">Ovulation</option>
+                        <option value="Luteal">Luteal</option>
+                        <option value="All">All Phases</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Difficulty Level:</label>
+                    <select id="yogaDifficulty">
+                        <option value="beginner">Beginner</option>
+                        <option value="intermediate">Intermediate</option>
+                        <option value="advanced">Advanced</option>
+                        <option value="all">All Levels</option>
+                    </select>
+                </div>
+
+                <button class="btn" onclick="getYogaRecommendations()">Get Yoga Poses</button>
+
+                <div id="yogaRecommendations" style="margin-top: 30px;"></div>
+            </div>
+        </div>
+
+        <!-- Breathing Tab -->
+        <div id="breathing" class="tab-content">
+            <div class="card">
+                <h2>🌬️ Breathing Exercises</h2>
+                
+                <div class="form-group">
+                    <label>Select Purpose:</label>
+                    <select id="breathingPurpose">
+                        <option value="all">All Exercises</option>
+                        <option value="anxiety">Reduce Anxiety</option>
+                        <option value="stress">Stress Relief</option>
+                        <option value="sleep">Better Sleep</option>
+                        <option value="energy">Boost Energy</option>
+                    </select>
+                </div>
+
+                <button class="btn" onclick="getBreathingExercises()">Get Exercises</button>
+
+                <div id="breathingRecommendations" style="margin-top: 30px;"></div>
+            </div>
+        </div>
+
+        <!-- Phase Guide Tab -->
+        <div id="phase-guide" class="tab-content">
+            <div class="card">
+                <h2>📅 Phase-Specific Recommendations</h2>
+                
+                <div class="form-group">
+                    <label>Select Your Current Phase:</label>
+                    <select id="phaseSelect" onchange="updatePhaseRecommendations()">
+                        <option value="Menstrual">Menstrual Phase</option>
+                        <option value="Follicular">Follicular Phase</option>
+                        <option value="Ovulation">Ovulation Phase</option>
+                        <option value="Luteal">Luteal Phase</option>
+                    </select>
+                </div>
+
+                <div id="phaseRecsDisplay"></div>
+            </div>
+        </div>
+
+        <!-- Education Tab -->
+        <div id="education" class="tab-content">
+            <div class="card">
+                <h2>📚 Menstrual Health Education</h2>
+                
+                <div class="education-section">
+                    <h3>📖 Understanding the Phases</h3>
+                    <pre id="eduPhases"></pre>
+                </div>
+
+                <div class="education-section">
+                    <h3>🧪 Hormone Fluctuations</h3>
+                    <pre id="eduHormones"></pre>
+                </div>
+
+                <div class="education-section">
+                    <h3>⚠️ PMS vs PMDD</h3>
+                    <pre id="eduPMDD"></pre>
+                </div>
+
+                <div class="education-section">
+                    <h3>🧼 Hygiene Best Practices</h3>
+                    <pre id="eduHygiene"></pre>
+                </div>
+
+                <div class="education-section">
+                    <h3>❓ Common Myths Debunked</h3>
+                    <pre id="eduMyths"></pre>
+                </div>
+
+                <div class="education-section">
+                    <h3>🩺 When to See a Doctor</h3>
+                    <pre id="eduDoctor"></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- History Tab -->
+        <div id="history" class="tab-content">
+            <div class="card">
+                <h2>📜 Health History</h2>
+                
+                <div class="form-group">
+                    <label>Number of entries to show:</label>
+                    <input type="number" id="historyCount" min="1" max="30" value="10">
+                </div>
+
+                <button class="btn" onclick="loadHistory()">Load History</button>
+
+                <div id="historyTimeline" style="margin-top: 30px;"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        
+// ==================== API INTEGRATION CODE ====================
+// Add this at the top of your existing <script> section
+
+// API Configuration
+const USE_API = true;  // Set to false to use local storage only
+const API_URL = 'http://localhost:3000/api';
+
+// Store original functions
+const _originalGenerateReport = window.generateReport;
+const _originalLoadHistory = window.loadHistory;
+
+// Override generateReport to use API
+window.generateReport = async function() {
+    const day = parseInt(document.getElementById('dayOfCycle').value);
+    const energy = parseInt(document.getElementById('energyLevel').value);
+    const notes = document.getElementById('notes').value;
+    
+    const phase = getPhaseByDay(day);
+    const symptomIndices = Object.keys(selectedSymptoms).map(Number);
+    const moodIndices = Object.keys(selectedMoods).map(Number);
+    const condition = detectCondition(symptomIndices);
+    
+    const reportData = {
+        day: day,
+        energy: energy,
+        symptoms: symptomIndices,
+        moods: moodIndices,
+        notes: notes
+    };
+    
+    // Save to backend API
+    if (USE_API) {
+        try {
+            const response = await fetch(`${API_URL}/report`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(reportData)
+            });
+            const result = await response.json();
+            console.log('✅ Saved to backend:', result);
+        } catch (error) {
+            console.error('❌ API Error:', error);
+            alert('Could not connect to server. Data saved locally only.');
+        }
+    }
+    
+    // Also save locally (fallback)
+    saveToLocalHistory(day, phase, condition, energy, notes);
+    
+    // Display report (use original function)
+    const reportOutput = `
+        <div class="card" style="background: linear-gradient(135deg, #FFF5F9 0%, #FFE5EE 100%);">
+            <h2>📊 Your Health Report</h2>
+            <p><strong>Date:</strong> ${new Date().toLocaleDateString()}</p>
+            <p><strong>Phase:</strong> ${phase} (Day ${day})</p>
+            <p><strong>Condition:</strong> ${condition}</p>
+            <p><strong>Energy Level:</strong> ${energy}/10</p>
+            
+            <h3>Symptoms:</h3>
+            <ul>
+                ${symptomIndices.map(index => `<li>${symptoms[index]}</li>`).join('')}
+            </ul>
+            
+            <h3>Moods:</h3>
+            <ul>
+                ${moodIndices.map(index => `<li>${moods[index]}</li>`).join('')}
+            </ul>
+            
+            ${notes ? `<p><strong>Notes:</strong> ${notes}</p>` : ''}
+        </div>
+    `;
+    
+    document.getElementById('reportOutput').innerHTML = reportOutput;
+};
+
+// Override loadHistory to use API
+window.loadHistory = async function() {
+    const count = parseInt(document.getElementById('historyCount').value);
+    
+    if (USE_API) {
+        try {
+            const response = await fetch(`${API_URL}/history?count=${count}`);
+            const history = await response.json();
+            
+            let html = '';
+            history.reverse().forEach(entry => {
+                html += `
+                    <div class="history-item">
+                        <div class="history-date">${entry.date}</div>
+                        <p><strong>Phase:</strong> ${entry.phase} (Day ${entry.day})</p>
+                        <p><strong>Condition:</strong> ${entry.condition}</p>
+                        <p><strong>Energy:</strong> ${entry.energy}/10</p>
+                        ${entry.notes ? `<p><strong>Notes:</strong> ${entry.notes}</p>` : ''}
+                    </div>
+                `;
+            });
+            
+            document.getElementById('historyTimeline').innerHTML = html || '<p>No history yet. Start tracking!</p>';
+            console.log('✅ Loaded history from backend');
+            return;
+        } catch (error) {
+            console.error('❌ API Error:', error);
+            alert('Could not connect to server. Showing local data only.');
+        }
+    }
+    
+    // Fallback to local storage
+    if (_originalLoadHistory) {
+        _originalLoadHistory();
+    } else {
+        // Manual fallback
+        const history = JSON.parse(localStorage.getItem('menstrualHistory') || '[]');
+        let html = '';
+        const recentEntries = history.slice(-count).reverse();
+        
+        recentEntries.forEach(entry => {
+            html += `
+                <div class="history-item">
+                    <div class="history-date">${entry.date}</div>
+                    <p><strong>Phase:</strong> ${entry.phase} (Day ${entry.day})</p>
+                    <p><strong>Condition:</strong> ${entry.condition}</p>
+                    <p><strong>Energy:</strong> ${entry.energy}/10</p>
+                    ${entry.notes ? `<p><strong>Notes:</strong> ${entry.notes}</p>` : ''}
+                </div>
+            `;
+        });
+
+        document.getElementById('historyTimeline').innerHTML = html || '<p>No history yet. Start tracking!</p>';
+    }
+};
+
+// Test API connection on page load
+window.addEventListener('load', async function() {
+    if (USE_API) {
+        try {
+            const response = await fetch(`${API_URL}/health`);
+            const result = await response.json();
+            console.log('✅ Connected to backend server:', result);
+        } catch (error) {
+            console.warn('⚠️ Backend server not running. Using local storage only.');
+            console.warn('To start server: Open Command Prompt in your folder and run: node server.js');
+        }
+    }
+});
+
+// ==================== END OF API INTEGRATION CODE ====================
+
+        /*
+         * DATA STRUCTURES USED:
+         * 
+         * 1. ARRAY - symptoms[], moods[], symptomSeverities[] 
+         *    - Fixed-size arrays for storing symptom and mood options
+         *    - Index-based access for O(1) lookup
+         * 
+         * 2. HASH TABLE (JavaScript Object) - selectedSymptoms{}, selectedMoods{}
+         *    - Key-value pairs for tracking selected items with their severities
+         *    - O(1) average time complexity for insertion and lookup
+         * 
+         * 3. STACK - undoStack[], redoStack[]
+         *    - LIFO structure for undo/redo functionality
+         *    - push() and pop() operations for state management
+         * 
+         * 4. QUEUE (implicit in history) - historyStack[]
+         *    - FIFO-like behavior for health entry history
+         *    - Used with slice() for time-based ordering
+         * 
+         * 5. PRIORITY QUEUE (backend) - Used in C++ backend for food recommendations
+         *    - Max heap based on priority values
+         * 
+         * 6. GRAPH (backend) - cycleGraph in C++ 
+         *    - Directed graph using adjacency list (map)
+         *    - Represents phase transitions in menstrual cycle
+         * 
+         * 7. TREE (implicit in localStorage) - Hierarchical key-value storage
+         *    - Nested JSON objects stored as strings
+         */
+
+        // ARRAY - List of all symptoms (20 items, indexed 0-19)
+        const symptoms = [
+            "Cramps", "Bloating", "Headache", "Fatigue", "Back Pain",
+            "Breast Tenderness", "Nausea", "Diarrhea", "Constipation", "Acne",
+            "Joint Pain", "Muscle Aches", "Hot Flashes", "Dizziness", "Insomnia",
+            "Food Cravings", "Increased Appetite", "Water Retention", "Leg Pain", "Numbness"
+        ];
+
+        // ARRAY - List of all moods (15 items, indexed 0-14)
+        const moods = [
+            "Irritable", "Anxious", "Depressed", "Mood Swings", "Angry",
+            "Sad", "Happy", "Energetic", "Calm", "Focused",
+            "Stressed", "Overwhelmed", "Confident", "Social", "Withdrawn"
+        ];
+
+        // HASH TABLE - Track selected symptoms with severities
+        let selectedSymptoms = {}; // {symptomIndex: severity}
+        let selectedMoods = {}; // {moodIndex: 1}
+
+        // STACK - For undo/redo functionality
+        let undoStack = [];
+        let redoStack = [];
+        let historyStack = [];
+
+        // Initialize app
+        window.onload = function() {
+            loadSymptoms();
+            loadMoods();
+            loadEducation();
+            updatePhaseRecommendations();
+            
+            // Update energy level display
+            document.getElementById('energyLevel').oninput = function() {
+                document.getElementById('energyValue').textContent = this.value;
+            };
+        };
+
+        // Tab switching
+        function switchTab(tabName) {
+            const tabs = document.querySelectorAll('.tab-content');
+            const btns = document.querySelectorAll('.tab-btn');
+            
+            tabs.forEach(tab => tab.classList.remove('active'));
+            btns.forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Load symptoms as checkboxes
+        function loadSymptoms() {
+            const container = document.getElementById('symptomsGroup');
+            container.innerHTML = '';
+            
+            symptoms.forEach((symptom, index) => {
+                const div = document.createElement('div');
+                div.className = 'checkbox-item';
+                div.innerHTML = `
+                    <input type="checkbox" id="symptom${index}" onchange="toggleSymptom(${index})">
+                    <label for="symptom${index}">${symptom}</label>
+                `;
+                
+                // Make entire div clickable
+                div.onclick = function(e) {
+                    if (e.target.tagName !== 'INPUT') {
+                        const checkbox = document.getElementById(`symptom${index}`);
+                        checkbox.checked = !checkbox.checked;
+                        toggleSymptom(index);
+                    }
+                };
+                
+                container.appendChild(div);
+            });
+        }
+
+        // Toggle symptom selection
+        function toggleSymptom(index) {
+            const checkbox = document.getElementById(`symptom${index}`);
+            const div = checkbox.closest('.checkbox-item');
+            
+            if (checkbox.checked) {
+                selectedSymptoms[index] = 1;
+                div.classList.add('checked');
+            } else {
+                delete selectedSymptoms[index];
+                div.classList.remove('checked');
+            }
+        }
+
+        // Load moods as checkboxes
+        function loadMoods() {
+            const container = document.getElementById('moodsGroup');
+            container.innerHTML = '';
+            
+            moods.forEach((mood, index) => {
+                const div = document.createElement('div');
+                div.className = 'checkbox-item';
+                div.innerHTML = `
+                    <input type="checkbox" id="mood${index}" onchange="toggleMood(${index})">
+                    <label for="mood${index}">${mood}</label>
+                `;
+                
+                // Make entire div clickable
+                div.onclick = function(e) {
+                    if (e.target.tagName !== 'INPUT') {
+                        const checkbox = document.getElementById(`mood${index}`);
+                        checkbox.checked = !checkbox.checked;
+                        toggleMood(index);
+                    }
+                };
+                
+                container.appendChild(div);
+            });
+        }
+
+        // Toggle mood selection
+        function toggleMood(index) {
+            const checkbox = document.getElementById(`mood${index}`);
+            const div = checkbox.closest('.checkbox-item');
+            
+            if (checkbox.checked) {
+                selectedMoods[index] = 1;
+                div.classList.add('checked');
+            } else {
+                delete selectedMoods[index];
+                div.classList.remove('checked');
+            }
+        }
+
+        // Get phase by day
+        function getPhaseByDay(day) {
+            if (day <= 5) return "Menstrual";
+            if (day <= 13) return "Follicular";
+            if (day <= 15) return "Ovulation";
+            return "Luteal";
+        }
+
+        // Detect condition based on symptoms
+        function detectCondition(symptoms) {
+            // Simple condition detection logic based on which symptoms are present
+            if (symptoms.includes(0)) return "Menstrual Discomfort"; // Cramps
+            if (symptoms.includes(1)) return "Bloating"; // Bloating
+            if (symptoms.includes(3)) return "Fatigue / Low Energy"; // Fatigue
+            if (symptoms.includes(2)) return "Headaches"; // Headache
+            if (symptoms.includes(9)) return "Breakouts"; // Acne
+            
+            // Check for PMS (multiple symptoms)
+            if (symptoms.length >= 3) return "PMS";
+            
+            return "Normal";
+        }
+
+        // Generate health report
+        function generateReport() {
+            const day = parseInt(document.getElementById('dayOfCycle').value);
+            const energy = parseInt(document.getElementById('energyLevel').value);
+            const notes = document.getElementById('notes').value;
+            
+            const phase = getPhaseByDay(day);
+            
+            // Convert selected symptoms to array
+            const symptomIndices = Object.keys(selectedSymptoms).map(Number);
+            
+            const condition = detectCondition(symptomIndices);
+            
+            // Save to history
+            saveToLocalHistory(day, phase, condition, energy, notes);
+            
+            // Display report
+            let html = `
+                <div class="card" style="background: linear-gradient(135deg, #FFF5F9 0%, #FFE5EE 100%);">
+                    <h2>📊 Your Health Report</h2>
+                    <p><strong>Date:</strong> ${new Date().toLocaleDateString()}</p>
+                    <p><strong>Phase:</strong> ${phase} (Day ${day})</p>
+                    <p><strong>Condition:</strong> ${condition}</p>
+                    <p><strong>Energy Level:</strong> ${energy}/10</p>
+                    
+                    <h3>Symptoms:</h3>
+                    <ul>
+            `;
+            
+            symptomIndices.forEach(index => {
+                html += `<li>${symptoms[index]}</li>`;
+            });
+            
+            html += `</ul><h3>Moods:</h3><ul>`;
+            
+            Object.keys(selectedMoods).forEach(index => {
+                html += `<li>${moods[index]}</li>`;
+            });
+            
+            html += `</ul>`;
+            
+            if (notes) {
+                html += `<p><strong>Notes:</strong> ${notes}</p>`;
+            }
+            
+            html += `</div>`;
+            
+            document.getElementById('reportOutput').innerHTML = html;
+        }
+
+        // Get food recommendations
+        function getFoodRecommendations() {
+            const condition = document.getElementById('conditionSelect').value;
+            const vegetarian = document.getElementById('vegetarianFilter').checked;
+            const vegan = document.getElementById('veganFilter').checked;
+            
+            // This would normally call the backend API
+            // For now, we'll use sample data
+            const sampleFoods = getFoodDataForCondition(condition, vegetarian, vegan);
+            
+            let html = '<h3>🍽️ Recommended Foods</h3>';
+            
+            sampleFoods.forEach(food => {
+                html += `
+                    <div class="food-item">
+                        <h3>${food.name}</h3>
+                        <div class="nutrients">
+                            <strong>Key Nutrients:</strong> ${food.nutrients}
+                        </div>
+                        <div class="benefits">
+                            <strong>Benefits:</strong> ${food.benefit}
+                        </div>
+                        <p><strong>Priority:</strong> ${'⭐'.repeat(Math.min(food.priority, 5))}</p>
+                    </div>
+                `;
+            });
+            
+            document.getElementById('foodRecommendations').innerHTML = html;
+        }
+
+        // Complete food database from C++ backend
+        function getFoodDataForCondition(condition, vegetarian, vegan) {
+            const foodDatabase = {
+                "PMS": [
+                    {name: "Dark Leafy Greens (Spinach, Kale)", nutrients: "Magnesium (40mg/cup), Iron (2.7mg), Calcium (100mg)", benefit: "Magnesium reduces muscle tension and cramps, iron prevents fatigue", priority: 10, isVegetarian: true, isVegan: true},
+                    {name: "Salmon", nutrients: "Omega-3 fatty acids (2000mg), Vitamin D (450IU), B6", benefit: "Omega-3s reduce prostaglandin production (inflammation), regulate mood hormones", priority: 10, isVegetarian: false, isVegan: false},
+                    {name: "Dark Chocolate (70%+ cocoa)", nutrients: "Magnesium (64mg/oz), Iron, Antioxidants (flavonoids)", benefit: "Magnesium relaxes muscles, releases endorphins for mood", priority: 9, isVegetarian: true, isVegan: true},
+                    {name: "Bananas", nutrients: "Vitamin B6 (0.4mg), Potassium (422mg), Fiber", benefit: "B6 produces serotonin for mood, potassium reduces water retention", priority: 9, isVegetarian: true, isVegan: true},
+                    {name: "Whole Grains (Brown rice, Oats)", nutrients: "Complex carbs, B vitamins, Magnesium, Fiber", benefit: "Stabilize blood sugar to prevent mood swings and cravings", priority: 8, isVegetarian: true, isVegan: true},
+                    {name: "Greek Yogurt", nutrients: "Calcium (300mg), Probiotics, Protein, B12", benefit: "Calcium reduces PMS symptoms by 30%, probiotics aid gut-brain axis", priority: 9, isVegetarian: true, isVegan: false},
+                    {name: "Chickpeas", nutrients: "B6 (0.5mg), Magnesium, Protein, Fiber", benefit: "B6 regulates neurotransmitters for mood stability", priority: 8, isVegetarian: true, isVegan: true},
+                    {name: "Pumpkin Seeds", nutrients: "Magnesium (150mg/oz), Zinc, Iron, Omega-3", benefit: "Supports hormone balance and reduces inflammation", priority: 8, isVegetarian: true, isVegan: true}
+                ],
+                "Fatigue / Low Energy": [
+                    {name: "Red Meat (Lean beef)", nutrients: "Heme iron (2.5mg/3oz), B12 (2.4mcg), Protein, Zinc", benefit: "Heme iron is 2-3x more absorbable, B12 crucial for energy metabolism", priority: 10, isVegetarian: false, isVegan: false},
+                    {name: "Lentils", nutrients: "Iron (3.3mg/cup), Protein (18g), Folate (358mcg), Fiber", benefit: "Plant iron plus folate for red blood cell production and sustained energy", priority: 10, isVegetarian: true, isVegan: true},
+                    {name: "Eggs", nutrients: "B12 (0.6mcg), Protein (6g), Iron, Choline", benefit: "Complete protein with iron for hemoglobin production", priority: 9, isVegetarian: false, isVegan: false},
+                    {name: "Almonds & Cashews", nutrients: "Magnesium (80mg/oz), Healthy fats, Vitamin E, Iron", benefit: "Magnesium converts food to energy, prevents muscle fatigue", priority: 8, isVegetarian: true, isVegan: true},
+                    {name: "Berries (Strawberries, Blueberries)", nutrients: "Antioxidants, Vitamin C (85mg), Fiber", benefit: "Vitamin C increases iron absorption by up to 300%", priority: 8, isVegetarian: true, isVegan: true},
+                    {name: "Quinoa", nutrients: "Iron (2.8mg/cup), Complete protein (8g), Magnesium", benefit: "All 9 essential amino acids for sustained energy", priority: 9, isVegetarian: true, isVegan: true},
+                    {name: "Spinach (Cooked)", nutrients: "Iron (6.4mg/cup), Folate, Vitamin C", benefit: "Highest plant iron source, folate prevents anemia", priority: 9, isVegetarian: true, isVegan: true},
+                    {name: "Beetroot", nutrients: "Nitrates, Iron, Folate, Vitamin C", benefit: "Nitrates improve oxygen delivery to muscles by 16%", priority: 8, isVegetarian: true, isVegan: true},
+                    {name: "Chia Seeds", nutrients: "Omega-3 (5g/oz), Iron (2.2mg), Protein, Fiber", benefit: "Sustained energy release, omega-3 reduces fatigue", priority: 8, isVegetarian: true, isVegan: true},
+                    {name: "Spirulina", nutrients: "Iron (2mg/tsp), Protein (4g), B12", benefit: "One of most iron-dense foods, boosts energy quickly", priority: 9, isVegetarian: true, isVegan: true}
+                ],
+                "Menstrual Discomfort": [
+                    {name: "Ginger Tea", nutrients: "Gingerol (anti-inflammatory compound)", benefit: "Blocks prostaglandin synthesis as effectively as ibuprofen", priority: 10, isVegetarian: true, isVegan: true},
+                    {name: "Turmeric (with black pepper)", nutrients: "Curcumin (200mg), Piperine", benefit: "Curcumin reduces inflammation, piperine increases absorption 2000%", priority: 10, isVegetarian: true, isVegan: true},
+                    {name: "Chamomile Tea", nutrients: "Apigenin (relaxant), Glycine", benefit: "Relaxes uterine muscles, reduces cramping pain by 25%", priority: 9, isVegetarian: true, isVegan: true},
+                    {name: "Pineapple", nutrients: "Bromelain (enzyme), Vitamin C, Manganese", benefit: "Bromelain reduces heavy bleeding and menstrual pain", priority: 8, isVegetarian: true, isVegan: true},
+                    {name: "Flaxseeds (Ground)", nutrients: "Lignans, Omega-3 (2.3g/tbsp), Fiber", benefit: "Lignans balance estrogen, omega-3 reduces cramping", priority: 9, isVegetarian: true, isVegan: true},
+                    {name: "Water (8+ glasses)", nutrients: "Hydration", benefit: "Reduces bloating and helps flush excess sodium", priority: 10, isVegetarian: true, isVegan: true},
+                    {name: "Cinnamon", nutrients: "Cinnamaldehyde (anti-inflammatory)", benefit: "Reduces menstrual pain and heavy bleeding", priority: 8, isVegetarian: true, isVegan: true},
+                    {name: "Papaya", nutrients: "Papain enzyme, Carotene, Vitamin C", benefit: "Helps regulate periods and ease muscle contractions", priority: 8, isVegetarian: true, isVegan: true},
+                    {name: "Fennel Seeds", nutrients: "Anethole, Phytoestrogens", benefit: "Reduces cramping intensity by 30%, antispasmodic properties", priority: 8, isVegetarian: true, isVegan: true},
+                    {name: "Mint Tea", nutrients: "Menthol, Rosmarinic acid", benefit: "Natural muscle relaxant, eases digestive discomfort", priority: 8, isVegetarian: true, isVegan: true}
+                ],
+                "Heavy Flow": [
+                    {name: "Red Meat (Grass-fed beef)", nutrients: "Heme iron (3mg/3oz), B12, Zinc, Protein", benefit: "Replenishes iron lost during heavy bleeding (50-80mg per cycle)", priority: 10, isVegetarian: false, isVegan: false},
+                    {name: "Spinach (Cooked)", nutrients: "Iron (6.4mg/cup), Vitamin K (888mcg), Folate", benefit: "Vitamin K aids blood clotting, iron prevents anemia", priority: 10, isVegetarian: true, isVegan: true},
+                    {name: "Lentils & Beans", nutrients: "Iron (6.6mg/cup), Folate (358mcg), Protein", benefit: "High non-heme iron for hemoglobin production", priority: 10, isVegetarian: true, isVegan: true},
+                    {name: "Beetroot", nutrients: "Iron (1.1mg), Folate (148mcg), Nitrates", benefit: "Increases hemoglobin and red blood cell count", priority: 9, isVegetarian: true, isVegan: true},
+                    {name: "Pumpkin Seeds", nutrients: "Iron (4.2mg/oz), Zinc (2.2mg), Magnesium", benefit: "Excellent iron source plus zinc for blood health", priority: 9, isVegetarian: true, isVegan: true},
+                    {name: "Blackstrap Molasses", nutrients: "Iron (3.5mg/tbsp), Calcium (172mg), B6", benefit: "Most concentrated plant iron source", priority: 8, isVegetarian: true, isVegan: true},
+                    {name: "Vitamin C Foods (Oranges, Bell peppers)", nutrients: "Vitamin C (95mg)", benefit: "Enhances non-heme iron absorption by 300%", priority: 9, isVegetarian: true, isVegan: true},
+                    {name: "Dates", nutrients: "Iron (1mg/date), Fiber, Natural sugars", benefit: "Quick energy plus iron in concentrated form", priority: 8, isVegetarian: true, isVegan: true},
+                    {name: "Liver (Chicken/Beef)", nutrients: "Heme iron (10mg/3oz), B12, Folate, Vitamin A", benefit: "Highest natural iron source, rapidly replenishes stores", priority: 10, isVegetarian: false, isVegan: false},
+                    {name: "Sesame Seeds", nutrients: "Iron (4.1mg/oz), Calcium, Copper", benefit: "Copper aids iron absorption, excellent for blood building", priority: 8, isVegetarian: true, isVegan: true}
+                ],
+                "Bloating": [
+                    {name: "Cucumber", nutrients: "Water (96%), Potassium (150mg), Silica", benefit: "Natural diuretic, reduces water retention", priority: 9, isVegetarian: true, isVegan: true},
+                    {name: "Watermelon", nutrients: "Water (92%), Potassium, Lycopene", benefit: "Flushes excess sodium, reduces bloating", priority: 9, isVegetarian: true, isVegan: true},
+                    {name: "Ginger Tea", nutrients: "Gingerol, Anti-spasmodic compounds", benefit: "Speeds up gastric emptying, reduces gas by 25%", priority: 9, isVegetarian: true, isVegan: true},
+                    {name: "Peppermint Tea", nutrients: "Menthol, Anti-spasmodic oils", benefit: "Relaxes digestive tract muscles, relieves bloating", priority: 9, isVegetarian: true, isVegan: true},
+                    {name: "Papaya", nutrients: "Papain enzyme, Fiber (2.5g)", benefit: "Breaks down proteins, aids digestion", priority: 8, isVegetarian: true, isVegan: true},
+                    {name: "Fennel Seeds", nutrients: "Anethole (anti-spasmodic)", benefit: "Reduces intestinal gas and bloating", priority: 8, isVegetarian: true, isVegan: true},
+                    {name: "Asparagus", nutrients: "Asparagine (amino acid), Folate", benefit: "Natural diuretic, helps eliminate excess fluid", priority: 8, isVegetarian: true, isVegan: true},
+                    {name: "Bananas", nutrients: "Potassium (422mg), Resistant starch", benefit: "Regulates fluid balance, prevents constipation", priority: 8, isVegetarian: true, isVegan: true},
+                    {name: "Celery", nutrients: "Water (95%), Potassium, Fiber", benefit: "Natural diuretic, reduces water weight", priority: 8, isVegetarian: true, isVegan: true},
+                    {name: "Kiwi", nutrients: "Actinidin enzyme, Fiber, Vitamin C", benefit: "Aids digestion, reduces constipation-related bloating", priority: 8, isVegetarian: true, isVegan: true}
+                ],
+                "Anxious": [
+                    {name: "Chamomile Tea", nutrients: "Apigenin (binds to GABA receptors), Antioxidants", benefit: "Increases GABA activity in brain, reduces anxiety by 50% in studies", priority: 10, isVegetarian: true, isVegan: true},
+                    {name: "Salmon & Fatty Fish", nutrients: "Omega-3 (EPA 1000mg, DHA 500mg), Vitamin D", benefit: "EPA reduces cortisol and adrenaline, DHA supports brain function", priority: 10, isVegetarian: false, isVegan: false},
+                    {name: "Dark Chocolate (85%+)", nutrients: "Flavonoids, Magnesium (64mg/oz), Theobromine", benefit: "Reduces cortisol levels, increases serotonin and dopamine", priority: 9, isVegetarian: true, isVegan: true},
+                    {name: "Almonds", nutrients: "Magnesium (75mg/oz), Vitamin E, B2", benefit: "Magnesium regulates nervous system, B vitamins reduce stress", priority: 9, isVegetarian: true, isVegan: true},
+                    {name: "Blueberries", nutrients: "Antioxidants (anthocyanins), Vitamin C", benefit: "Reduces oxidative stress, lowers cortisol levels", priority: 8, isVegetarian: true, isVegan: true},
+                    {name: "Greek Yogurt", nutrients: "Probiotics (10B CFU), B12, Calcium", benefit: "Gut-brain axis: probiotics reduce anxiety 30-40%", priority: 9, isVegetarian: true, isVegan: false},
+                    {name: "Green Tea", nutrients: "L-theanine (25mg/cup), EGCG antioxidants", benefit: "L-theanine increases alpha brain waves for calm alertness", priority: 9, isVegetarian: true, isVegan: true},
+                    {name: "Oatmeal", nutrients: "Complex carbs, B vitamins, Fiber, Selenium", benefit: "Boosts serotonin production, stabilizes blood sugar to prevent mood crashes", priority: 8, isVegetarian: true, isVegan: true}
+                ],
+                "Depressed / Low Mood": [
+                    {name: "Fatty Fish (Salmon, Mackerel)", nutrients: "Omega-3 EPA/DHA (2500mg), Vitamin D (600IU), B12", benefit: "Omega-3 increases serotonin and dopamine, clinical studies show 30% mood improvement", priority: 10, isVegetarian: false, isVegan: false},
+                    {name: "Dark Chocolate (70%+)", nutrients: "Phenylethylamine (PEA), Tryptophan, Flavonoids", benefit: "PEA triggers endorphin release, tryptophan converts to serotonin", priority: 9, isVegetarian: true, isVegan: true},
+                    {name: "Bananas", nutrients: "Tryptophan, B6 (0.4mg), Dopamine precursors", benefit: "B6 converts tryptophan to serotonin for mood regulation", priority: 9, isVegetarian: true, isVegan: true},
+                    {name: "Walnuts", nutrients: "Omega-3 ALA (2.5g/oz), Melatonin, Folate", benefit: "Higher omega-3 than any nut, supports brain neurotransmitters", priority: 9, isVegetarian: true, isVegan: true},
+                    {name: "Spinach & Leafy Greens", nutrients: "Folate (263mcg/cup), Iron, Magnesium", benefit: "Folate deficiency linked to depression, needed for serotonin production", priority: 9, isVegetarian: true, isVegan: true},
+                    {name: "Fermented Foods (Kimchi, Sauerkraut)", nutrients: "Probiotics (billions CFU), B vitamins, K2", benefit: "90% of serotonin made in gut, probiotics improve mood via gut-brain axis", priority: 8, isVegetarian: true, isVegan: true},
+                    {name: "Eggs", nutrients: "Choline (147mg), Tryptophan, B12, Vitamin D", benefit: "Choline makes acetylcholine (mood neurotransmitter), complete amino acids", priority: 9, isVegetarian: false, isVegan: false},
+                    {name: "Turmeric", nutrients: "Curcumin (200mg), Piperine booster", benefit: "Increases BDNF (brain growth factor), raises serotonin and dopamine", priority: 8, isVegetarian: true, isVegan: true}
+                ],
+                "Insomnia": [
+                    {name: "Tart Cherry Juice", nutrients: "Melatonin (natural), Tryptophan, Antioxidants", benefit: "Contains natural melatonin, increases sleep time by 84 minutes in studies", priority: 10, isVegetarian: true, isVegan: true},
+                    {name: "Kiwi", nutrients: "Serotonin (high levels), Vitamin C, Folate", benefit: "Studies show 2 kiwis before bed increases sleep quality by 42%", priority: 10, isVegetarian: true, isVegan: true},
+                    {name: "Almonds", nutrients: "Magnesium (75mg/oz), Melatonin, Tryptophan", benefit: "Magnesium promotes muscle relaxation and regulates sleep hormones", priority: 9, isVegetarian: true, isVegan: true},
+                    {name: "Chamomile Tea", nutrients: "Apigenin (flavonoid), Glycine", benefit: "Binds to GABA receptors in brain, reduces sleep latency", priority: 10, isVegetarian: true, isVegan: true},
+                    {name: "Walnuts", nutrients: "Melatonin (highest in nuts), Omega-3, Magnesium", benefit: "Boosts blood melatonin levels for better sleep-wake cycle", priority: 9, isVegetarian: true, isVegan: true},
+                    {name: "Fatty Fish (Salmon)", nutrients: "Vitamin D (450IU), Omega-3, B6", benefit: "Vitamin D and omega-3 increase serotonin, which converts to melatonin at night", priority: 9, isVegetarian: false, isVegan: false},
+                    {name: "Passionflower Tea", nutrients: "GABA-boosting compounds, Flavonoids", benefit: "Increases GABA production, clinically proven to improve sleep quality", priority: 8, isVegetarian: true, isVegan: true},
+                    {name: "Bananas", nutrients: "Potassium (422mg), Magnesium, Tryptophan", benefit: "Relaxes muscles, reduces nighttime leg cramps, promotes melatonin", priority: 8, isVegetarian: true, isVegan: true}
+                ],
+                "Brain Fog": [
+                    {name: "Fatty Fish (Salmon, Sardines)", nutrients: "Omega-3 DHA (1000mg), EPA (500mg), B12", benefit: "DHA makes up 40% of brain fat, improves memory and processing speed", priority: 10, isVegetarian: false, isVegan: false},
+                    {name: "Blueberries", nutrients: "Anthocyanins (antioxidants), Flavonoids, Vitamin K", benefit: "Increases blood flow to brain, improves memory by 20% in studies", priority: 10, isVegetarian: true, isVegan: true},
+                    {name: "Eggs", nutrients: "Choline (147mg), B12, Lutein, Folate", benefit: "Choline makes acetylcholine (memory neurotransmitter), essential for focus", priority: 9, isVegetarian: false, isVegan: false},
+                    {name: "Dark Leafy Greens", nutrients: "Lutein, Folate (263mcg), Vitamin K, Nitrates", benefit: "Slows cognitive decline, nitrates increase brain blood flow", priority: 9, isVegetarian: true, isVegan: true},
+                    {name: "Walnuts", nutrients: "Omega-3 ALA, Vitamin E, Polyphenols", benefit: "Only nut high in omega-3, improves cognitive function and memory", priority: 9, isVegetarian: true, isVegan: true},
+                    {name: "Green Tea", nutrients: "L-theanine (25mg), Caffeine (25mg), EGCG", benefit: "L-theanine + caffeine combo enhances focus and attention without jitters", priority: 9, isVegetarian: true, isVegan: true},
+                    {name: "Dark Chocolate (70%+)", nutrients: "Flavonoids, Caffeine, Magnesium", benefit: "Increases blood flow to brain, improves focus within 2 hours", priority: 8, isVegetarian: true, isVegan: true},
+                    {name: "Pumpkin Seeds", nutrients: "Zinc (2mg/oz), Magnesium, Iron, Copper", benefit: "Zinc critical for memory and cognition, improves nerve signaling", priority: 8, isVegetarian: true, isVegan: true}
+                ],
+                "Normal": [
+                    {name: "Leafy Greens (Kale, Spinach)", nutrients: "Vitamins A, C, K, Folate, Iron, Calcium", benefit: "Overall cellular health, supports all body systems", priority: 10, isVegetarian: true, isVegan: true},
+                    {name: "Salmon", nutrients: "Omega-3 (2500mg), Protein (25g/3oz), Vitamin D, B12", benefit: "Heart, brain, hormone, immune health - complete nutrition", priority: 10, isVegetarian: false, isVegan: false},
+                    {name: "Berries (Mixed)", nutrients: "Antioxidants, Fiber (4g/cup), Vitamin C, Manganese", benefit: "Anti-aging, immune support, cellular protection", priority: 9, isVegetarian: true, isVegan: true},
+                    {name: "Eggs", nutrients: "Complete protein, Choline, B12, Vitamin D, Selenium", benefit: "Brain health, hormone production, cellular repair", priority: 9, isVegetarian: false, isVegan: false},
+                    {name: "Sweet Potatoes", nutrients: "Beta-carotene, Fiber, Vitamin A (400% DV), Potassium", benefit: "Eye health, immune function, anti-inflammatory", priority: 8, isVegetarian: true, isVegan: true},
+                    {name: "Greek Yogurt", nutrients: "Protein (17g/cup), Probiotics, Calcium, B12", benefit: "Gut health, bone strength, immune support", priority: 9, isVegetarian: true, isVegan: false},
+                    {name: "Quinoa", nutrients: "Complete protein, Fiber, Magnesium, Iron, All 9 amino acids", benefit: "Sustained energy, muscle repair, overall nutrition", priority: 8, isVegetarian: true, isVegan: true},
+                    {name: "Avocado", nutrients: "Healthy fats, Fiber (10g), Potassium (700mg), Folate", benefit: "Heart health, nutrient absorption, hormone balance", priority: 9, isVegetarian: true, isVegan: true}
+                ]
+            };
+            
+            let foods = foodDatabase[condition] || foodDatabase["Normal"];
+            
+            // Filter by dietary preferences
+            if (vegan) {
+                foods = foods.filter(f => f.isVegan);
+            } else if (vegetarian) {
+                foods = foods.filter(f => f.isVegetarian);
+            }
+            
+            return foods;
+        }
+
+        // Get yoga recommendations
+        function getYogaRecommendations() {
+            const phase = document.getElementById('yogaPhase').value;
+            const difficulty = document.getElementById('yogaDifficulty').value;
+            
+            const yogaPoses = getYogaDataForPhase(phase, difficulty);
+            
+            let html = '<h3>🧘‍♀️ Recommended Yoga Poses</h3>';
+            
+            yogaPoses.forEach(pose => {
+                html += `
+                    <div class="yoga-item">
+                        <h3>${pose.name} (${pose.sanskritName})</h3>
+                        <p><strong>Difficulty:</strong> ${pose.difficulty.toUpperCase()}</p>
+                        <p><strong>Duration:</strong> ${pose.duration} minutes</p>
+                        <p><strong>Benefits:</strong> ${pose.benefits}</p>
+                        <p><strong>Steps:</strong></p>
+                        <p>${pose.steps}</p>
+                    </div>
+                `;
+            });
+            
+            document.getElementById('yogaRecommendations').innerHTML = html;
+        }
+
+        // Complete yoga database from C++ backend - 16 poses total
+        function getYogaDataForPhase(phase, difficulty) {
+            const yogaDatabase = {
+                "Menstrual": [
+                    {name: "Child's Pose", sanskritName: "Balasana", difficulty: "beginner", duration: 3, 
+                     benefits: "Relieves lower back pain, calms nervous system, reduces cramps, gentle compression on abdomen", 
+                     steps: "Kneel on mat. Touch big toes together, knees wide apart. Sit back on heels. Fold forward, extending arms. Rest forehead on mat. Breathe deeply, hold 1-3 minutes."},
+                    {name: "Reclining Bound Angle Pose", sanskritName: "Supta Baddha Konasana", difficulty: "beginner", duration: 5,
+                     benefits: "Opens hips, relieves cramping, reduces bloating, calms mind, promotes circulation in pelvic area",
+                     steps: "Lie on back. Bring soles of feet together. Let knees drop open to sides. Arms at sides, palms up. Relax completely. Breathe deeply. Hold 3-5 minutes. Support under knees if needed."},
+                    {name: "Supine Twist", sanskritName: "Supta Matsyendrasana", difficulty: "beginner", duration: 4,
+                     benefits: "Relieves lower back tension, massages internal organs, aids digestion, reduces bloating",
+                     steps: "Lie on back. Hug right knee to chest. Cross right knee over to left side. Extend right arm. Turn head to right. Breathe into twist. Hold 1-2 minutes each side. Switch sides."},
+                    {name: "Legs Up The Wall", sanskritName: "Viparita Karani", difficulty: "beginner", duration: 10,
+                     benefits: "Reduces swelling in legs, relieves cramping, calms nervous system, improves circulation, gentle inversion",
+                     steps: "Sit sideways next to wall. Swing legs up wall as you lie back. Hips close to wall (or slightly away if tight). Arms relaxed at sides. Close eyes. Hold 5-10 minutes. Excellent before bed."}
+                ],
+                "Follicular": [
+                    {name: "Cat-Cow Stretch", sanskritName: "Marjaryasana-Bitilasana", difficulty: "beginner", duration: 3,
+                     benefits: "Increases spine flexibility, massages abdominal organs, energizes body, improves posture",
+                     steps: "Start on hands and knees. Inhale: arch back (cow), lift head and tailbone. Exhale: round spine (cat), tuck chin and tailbone. Flow smoothly 10-15 rounds. Synchronize breath with movement."},
+                    {name: "Downward Facing Dog", sanskritName: "Adho Mukha Svanasana", difficulty: "intermediate", duration: 2,
+                     benefits: "Full body energizer, strengthens arms and legs, stretches hamstrings, improves circulation",
+                     steps: "Start on hands and knees. Tuck toes, lift hips high. Straighten legs (slight bend OK). Press palms down, fingers spread. Head between arms. Heels toward floor. Hold 5-10 breaths. Pedal feet to stretch."},
+                    {name: "Warrior I", sanskritName: "Virabhadrasana I", difficulty: "intermediate", duration: 2,
+                     benefits: "Builds confidence and strength, energizes body, improves balance, opens hips and chest",
+                     steps: "Step right foot forward into lunge. Back foot at 45° angle. Bend front knee 90°. Square hips forward. Raise arms overhead, palms together. Lift chest. Hold 5-10 breaths. Switch sides."},
+                    {name: "Tree Pose", sanskritName: "Vrksasana", difficulty: "beginner", duration: 2,
+                     benefits: "Improves balance and focus, builds leg strength, promotes mental clarity, grounding energy",
+                     steps: "Stand on left foot. Place right foot on inner left thigh (or calf, not knee). Hands to prayer position at chest. When balanced, raise arms overhead. Focus on one point. Hold 30-60 seconds. Switch sides."}
+                ],
+                "Ovulation": [
+                    {name: "Warrior II", sanskritName: "Virabhadrasana II", difficulty: "intermediate", duration: 2,
+                     benefits: "Peak power pose, builds endurance, opens hips, strengthens legs, radiates confidence",
+                     steps: "Stand wide. Turn right foot out 90°. Bend right knee over ankle. Extend arms parallel to floor. Gaze over right hand. Strong legs, open chest. Hold 5-10 breaths. Powerful stance. Switch sides."},
+                    {name: "Goddess Pose", sanskritName: "Utkata Konasana", difficulty: "intermediate", duration: 2,
+                     benefits: "Channels divine feminine energy, strengthens thighs, opens hips, builds stamina and confidence",
+                     steps: "Stand wide, toes out 45°. Bend knees, squat down. Knees over ankles. Arms in cactus position or overhead. Engage core, lift chest. Hold 5-10 breaths. Embrace your power. Feel the goddess within."},
+                    {name: "Dancer's Pose", sanskritName: "Natarajasana", difficulty: "advanced", duration: 3,
+                     benefits: "Expresses grace and strength, improves balance, opens heart and shoulders, energizing backbend",
+                     steps: "Stand on left leg. Bend right knee, grab right ankle behind. Kick foot into hand, lift leg high. Extend left arm forward. Arch back gently. Balance and breathe. Hold 30-60 seconds. Switch sides. Peak expression pose."},
+                    {name: "Crow Pose", sanskritName: "Bakasana", difficulty: "advanced", duration: 2,
+                     benefits: "Peak strength challenge, builds arm strength, core power, mental focus, confidence booster",
+                     steps: "Squat. Place hands shoulder-width apart. Bend elbows slightly. Place knees on upper arms/triceps. Lean forward, lift feet off ground. Balance on hands. Hold 10-30 seconds. Advanced practitioners hold longer."}
+                ],
+                "Luteal": [
+                    {name: "Seated Forward Fold", sanskritName: "Paschimottanasana", difficulty: "beginner", duration: 3,
+                     benefits: "Calms nervous system, reduces anxiety, stretches back, promotes introspection and rest",
+                     steps: "Sit with legs extended. Inhale, lengthen spine. Exhale, fold forward from hips. Reach for feet or shins. Keep back long. Relax into stretch. Breathe slowly. Hold 1-3 minutes. Very calming."},
+                    {name: "Pigeon Pose", sanskritName: "Eka Pada Rajakapotasana", difficulty: "intermediate", duration: 5,
+                     benefits: "Deep hip opener, releases stored emotions, reduces PMS tension, stretches hip flexors",
+                     steps: "From downward dog, bring right knee forward behind right wrist. Extend left leg back. Square hips forward. Fold forward over right leg. Rest on forearms or forehead. Breathe into hip. Hold 2-3 minutes. Release. Switch sides."},
+                    {name: "Corpse Pose", sanskritName: "Savasana", difficulty: "beginner", duration: 10,
+                     benefits: "Deep relaxation, reduces stress and anxiety, lowers cortisol, promotes rest and restoration",
+                     steps: "Lie flat on back. Legs extended, feet fall open naturally. Arms at sides, palms up. Close eyes. Scan body, release all tension. Breathe naturally. Stay 5-15 minutes. Essential for restoration. Perfect end to practice."},
+                    {name: "Gentle Spinal Twist", sanskritName: "Bharadvajasana", difficulty: "beginner", duration: 4,
+                     benefits: "Massages digestive organs, relieves bloating, calms nervous system, gentle detox",
+                     steps: "Sit with legs to left side. Place right hand behind. Left hand on right knee. Inhale lengthen. Exhale twist right. Look over right shoulder. Breathe into twist. Hold 1-2 minutes. Switch sides. Very soothing."}
+                ],
+                "All": [] // Will combine all phases
+            };
+            
+            let poses = [];
+            if (phase === 'All') {
+                // Combine all phases
+                poses = [...yogaDatabase["Menstrual"], ...yogaDatabase["Follicular"], ...yogaDatabase["Ovulation"], ...yogaDatabase["Luteal"]];
+            } else {
+                poses = yogaDatabase[phase] || [];
+            }
+            
+            if (difficulty !== 'all') {
+                poses = poses.filter(p => p.difficulty === difficulty);
+            }
+            
+            return poses;
+        }
+
+        // Get breathing exercises
+        function getBreathingExercises() {
+            const purpose = document.getElementById('breathingPurpose').value;
+            
+            const exercises = getBreathingData(purpose);
+            
+            let html = '<h3>🌬️ Breathing Exercises</h3>';
+            
+            exercises.forEach(ex => {
+                html += `
+                    <div class="breathing-item">
+                        <h3>${ex.name} (${ex.sanskritName})</h3>
+                        <p><strong>Purpose:</strong> ${ex.purpose}</p>
+                        <p><strong>Duration:</strong> ${ex.duration} minutes</p>
+                        <p><strong>Benefits:</strong> ${ex.benefits}</p>
+                        <p><strong>How to do it:</strong></p>
+                        <p>${ex.steps}</p>
+                    </div>
+                `;
+            });
+            
+            document.getElementById('breathingRecommendations').innerHTML = html;
+        }
+
+        // Sample breathing data
+        function getBreathingData(purpose) {
+            const breathingDatabase = [
+                {name: "4-7-8 Breathing", sanskritName: "Relaxing Breath", purpose: "anxiety", duration: 8,
+                 benefits: "Calms nervous system instantly, reduces heart rate by 10-15 bpm, improves sleep quality",
+                 steps: "Exhale completely through mouth with whoosh sound. Close mouth, inhale quietly through nose for 4 counts. Hold breath for 7 counts. Exhale completely through mouth for 8 counts. Repeat 4-8 times. Activates parasympathetic nervous system, reduces cortisol by 25% in 5 minutes."},
+                {name: "Alternate Nostril Breathing", sanskritName: "Nadi Shodhana", purpose: "anxiety", duration: 10,
+                 benefits: "Balances hormones, reduces mood swings, improves focus, calms anxiety",
+                 steps: "Sit comfortably, spine straight. Close right nostril with thumb. Inhale slowly through left nostril (4 counts). Close left nostril with ring finger, open right. Exhale through right nostril (4 counts). Inhale right, exhale left - one round. Complete 5-10 rounds. Balances left and right brain hemispheres."},
+                {name: "Box Breathing", sanskritName: "Sama Vritti", purpose: "stress", duration: 10,
+                 benefits: "Reduces stress immediately, improves focus and decision-making, lowers blood pressure",
+                 steps: "Exhale completely. Inhale through nose for 4 counts. Hold breath for 4 counts. Exhale through nose for 4 counts. Hold empty lungs for 4 counts. Repeat 5-10 minutes. Used by Navy SEALs, reduces stress hormones by 30%."},
+                {name: "Cooling Breath", sanskritName: "Sitali Pranayama", purpose: "stress", duration: 5,
+                 benefits: "Reduces hot flashes, cools body during luteal phase, reduces inflammation",
+                 steps: "Sit comfortably with spine straight. Roll tongue into tube (or press between lips if can't roll). Inhale slowly through rolled tongue. Close mouth, exhale through nose. Repeat 10-15 times. Cools body temperature by 2-3°F."},
+                {name: "Bellows Breath", sanskritName: "Bhastrika", purpose: "energy", duration: 3,
+                 benefits: "Boosts energy instantly, increases blood flow, improves metabolism, relieves fatigue",
+                 steps: "Sit with straight spine. Take deep inhale through nose. Exhale forcefully through nose. Repeat rapid cycles (1 per second). Do 10-20 breaths, then rest. Repeat 2-3 rounds. Increases oxygen by 15%. Avoid during menstruation or if dizzy."},
+                {name: "Ocean Breath", sanskritName: "Ujjayi Pranayama", purpose: "anxiety", duration: 10,
+                 benefits: "Reduces anxiety, warms body, improves focus during yoga, regulates nervous system",
+                 steps: "Inhale deeply through nose. Slightly contract throat (like fogging mirror). Create ocean-like sound. Exhale through nose with same sound. Continue 5-10 minutes. Increases oxygenation, activates relaxation response."},
+                {name: "Bee Breath", sanskritName: "Bhramari", purpose: "anxiety", duration: 5,
+                 benefits: "Instantly calms anxiety, reduces anger, improves sleep, relieves headaches",
+                 steps: "Sit comfortably, close eyes. Close ears with thumbs. Index fingers on forehead, rest on face. Inhale deeply through nose. Exhale making humming sound like bee. Repeat 5-10 times. Vibrations calm amygdala (fear center) by 40%."},
+                {name: "2:1 Breathing", sanskritName: "Extended Exhale", purpose: "sleep", duration: 10,
+                 benefits: "Promotes deep sleep, reduces insomnia, calms panic attacks, lowers blood pressure",
+                 steps: "Find comfortable seated or lying position. Inhale through nose for 4 counts. Exhale through nose for 8 counts. Make exhale twice as long as inhale. Continue 5-10 minutes. Activates vagus nerve, increases GABA by 27%."},
+                {name: "Lion's Breath", sanskritName: "Simhasana", purpose: "stress", duration: 4,
+                 benefits: "Releases facial tension, reduces stress, clears throat chakra, relieves frustration",
+                 steps: "Kneel or sit comfortably. Place hands on knees. Inhale deeply through nose. Exhale forcefully through mouth, stick tongue out. Make 'ha' sound, open eyes wide. Repeat 5-7 times. Releases jaw and facial tension."},
+                {name: "Skull Shining Breath", sanskritName: "Kapalabhati", purpose: "energy", duration: 4,
+                 benefits: "Energizes body, clears sinuses, improves digestion, detoxifies, increases mental clarity",
+                 steps: "Sit with straight spine. Inhale passively through nose. Exhale forcefully by contracting abdomen. Focus on forceful exhale, passive inhale. Do 20-30 cycles, rest. Repeat 2-3 rounds. Avoid during menstruation."},
+                {name: "Three-Part Breath", sanskritName: "Dirga Pranayama", purpose: "anxiety", duration: 10,
+                 benefits: "Deeply relaxing, reduces anxiety, improves breathing capacity, calms nervous system",
+                 steps: "Lie on back or sit comfortably. Inhale into belly (expand). Continue inhaling into ribcage (expand). Finish inhaling into upper chest. Exhale from upper chest, ribcage, then belly. Repeat 5-10 minutes. Uses full lung capacity."},
+                {name: "Victory Breath", sanskritName: "Ujjayi with retention", purpose: "energy", duration: 8,
+                 benefits: "Builds mental strength, improves concentration, warms body, calming yet energizing",
+                 steps: "Inhale through nose with ujjayi sound (4 counts). Hold breath comfortably (4-7 counts). Exhale through nose with ujjayi sound (6-8 counts). Repeat 8-12 rounds. Increases CO2 tolerance, improves oxygen utilization."},
+                {name: "Coherent Breathing", sanskritName: "5-5 Breathing", purpose: "stress", duration: 20,
+                 benefits: "Reduces stress, improves heart health, enhances emotional stability, promotes deep calm",
+                 steps: "Sit or lie comfortably. Inhale through nose for 5 counts. Exhale through nose for 5 counts. Maintain smooth, equal breaths. Continue 10-20 minutes. Optimizes heart rate variability, synchronizes body systems."},
+                {name: "Breath of Fire", sanskritName: "Agni Prasana", purpose: "energy", duration: 3,
+                 benefits: "Rapid energy boost, clears mind, strengthens core, increases vitality",
+                 steps: "Sit with straight spine. Pump belly rapidly in and out. Breathe rapidly through nose (2-3 per second). Equal emphasis on inhale and exhale. Do 30-60 seconds, rest. Repeat 2-3 rounds. Avoid during menstruation."},
+                {name: "Humming Bee with OM", sanskritName: "Bhramari variation", purpose: "anxiety", duration: 7,
+                 benefits: "Deep meditation, reduces anxiety, spiritual connection, calms entire nervous system",
+                 steps: "Sit comfortably, close eyes. Inhale deeply through nose. Exhale making 'OM' sound with humming quality. Feel vibration in head and chest. Repeat 7-10 times. Vibrations stimulate vagus nerve."},
+                {name: "Circular Breathing", sanskritName: "Continuous Breath", purpose: "energy", duration: 15,
+                 benefits: "Energizes body, induces deep meditation, releases blocked energy, emotional release",
+                 steps: "Sit or lie comfortably. Inhale and exhale without pause between. Make breath circular and continuous. Maintain smooth, flowing rhythm. Continue 5-15 minutes. Increases energy flow."},
+                {name: "Sitali with Kumbhaka", sanskritName: "Cooling Breath with retention", purpose: "stress", duration: 6,
+                 benefits: "Maximum cooling effect, reduces inflammation, calms agitation, helpful for hot flashes",
+                 steps: "Roll tongue into tube. Inhale slowly through tongue. Hold breath comfortably (5-7 seconds). Exhale through nose. Repeat 10-15 times. Enhanced cooling effect, reduces pitta dosha."},
+                {name: "Alternate Nostril with Retention", sanskritName: "Nadi Shodhana advanced", purpose: "anxiety", duration: 12,
+                 benefits: "Deep hormone balance, enhanced mental clarity, reduces severe anxiety, spiritual awakening",
+                 steps: "Close right nostril, inhale left (4 counts). Close both nostrils, hold (4-8 counts). Open right, exhale (4 counts). Inhale right (4 counts). Hold both closed (4-8 counts). Exhale left (4 counts). Repeat 5-10 rounds."},
+                {name: "4-4-6-2 Breathing", sanskritName: "Relaxation with pause", purpose: "sleep", duration: 9,
+                 benefits: "Deep relaxation, reduces stress, improves sleep, gentle yet powerful calming",
+                 steps: "Inhale through nose (4 counts). Hold breath (4 counts). Exhale through nose (6 counts). Hold empty (2 counts). Repeat 8-12 cycles. Extended exhale activates relaxation."},
+                {name: "Pursed Lip Breathing", sanskritName: "Controlled Exhale", purpose: "anxiety", duration: 10,
+                 benefits: "Helps with breathlessness, reduces anxiety, improves breathing efficiency, calming",
+                 steps: "Inhale through nose (2 counts). Purse lips like blowing out candle. Exhale slowly through pursed lips (4-6 counts). Keep exhale longer than inhale. Repeat 5-10 minutes. Keeps airways open longer."},
+                {name: "Wim Hof Method", sanskritName: "Power Breathing", purpose: "energy", duration: 15,
+                 benefits: "Extreme energy boost, reduces inflammation, improves immunity, mental clarity",
+                 steps: "Take 30-40 powerful breaths (full inhale, passive exhale). After last exhale, hold breath as long as comfortable. When need to breathe, inhale fully. Hold breath 15 seconds. Exhale and repeat 2-3 rounds. Advanced technique, use with caution."}
+            ];
+            
+            if (purpose === 'all') {
+                return breathingDatabase;
+            }
+            
+            return breathingDatabase.filter(ex => ex.purpose === purpose);
+        }
+
+        // Update phase recommendations
+        function updatePhaseRecommendations() {
+            const phase = document.getElementById('phaseSelect').value;
+            
+            const phaseRecommendations = {
+                "Menstrual": {
+                    sleep: "8-9 hours. Extra rest needed during bleeding. Listen to your body.",
+                    energy: "LOWEST - Fatigue is normal. Rest, don't push through exhaustion.",
+                    workload: "Light tasks only. Minimal commitments. Focus on self-care.",
+                    selfcare: "Heat pads, gentle stretching, warm baths, comfort foods, rest.",
+                    productivity: "INTROSPECTIVE - Journaling, reflection, planning ahead.",
+                    exercise: "Gentle only: slow walks, restorative yoga, stretching.",
+                    hydration: "10+ glasses. Helps reduce bloating and cramping."
+                },
+                "Follicular": {
+                    sleep: "7-8 hours. Natural energy boost begins after day 6.",
+                    energy: "RISING - Energy and mood improve daily. Motivation returns.",
+                    workload: "Increasing capacity. Good time to tackle challenging projects.",
+                    selfcare: "Social connections, trying new things, creative pursuits.",
+                    productivity: "CREATIVE - Brainstorming, learning, starting new projects.",
+                    exercise: "Moderate to intense: jogging, dance, strength training, cycling.",
+                    hydration: "8 glasses. Maintain consistent hydration for energy."
+                },
+                "Ovulation": {
+                    sleep: "7-8 hours. High energy but don't sacrifice sleep.",
+                    energy: "PEAK - Maximum energy, confidence, and social drive.",
+                    workload: "Peak capacity. Schedule important meetings, presentations, negotiations.",
+                    selfcare: "Social activities, community events, networking, adventures.",
+                    productivity: "MAXIMUM - Best communication skills. Present, lead, connect.",
+                    exercise: "Peak performance. HIIT, long runs, competitive sports, try PRs.",
+                    hydration: "8-10 glasses. Stay hydrated during high activity levels."
+                },
+                "Luteal": {
+                    sleep: "8-9 hours. Prioritize sleep as energy dips. Early bedtime helps.",
+                    energy: "DECLINING - Energy drops, especially last week. Plan lighter schedule.",
+                    workload: "Reduce gradually. Last week: minimal commitments. Focus on completion.",
+                    selfcare: "Comfort foods, cozy nights, journaling, baths, alone time, boundaries.",
+                    productivity: "DETAIL-ORIENTED - Great for organizing, editing, detailed work.",
+                    exercise: "Moderate then gentle. First 2 weeks: moderate. Last week: yoga, walks.",
+                    hydration: "9-10 glasses. Extra hydration reduces PMS bloating."
+                }
+            };
+            
+            const recs = phaseRecommendations[phase];
+            const display = document.getElementById('phaseRecsDisplay');
+            
+            display.innerHTML = `
+                <div class="rec-grid">
+                    <div class="rec-item">
+                        <h4>😴 Sleep</h4>
+                        <p>${recs.sleep}</p>
+                    </div>
+                    <div class="rec-item">
+                        <h4>⚡ Energy</h4>
+                        <p>${recs.energy}</p>
+                    </div>
+                    <div class="rec-item">
+                        <h4>💼 Workload</h4>
+                        <p>${recs.workload}</p>
+                    </div>
+                    <div class="rec-item">
+                        <h4>🌸 Self-Care</h4>
+                        <p>${recs.selfcare}</p>
+                    </div>
+                    <div class="rec-item">
+                        <h4>🎯 Productivity</h4>
+                        <p>${recs.productivity}</p>
+                    </div>
+                    <div class="rec-item">
+                        <h4>🏃‍♀️ Exercise</h4>
+                        <p>${recs.exercise}</p>
+                    </div>
+                    <div class="rec-item">
+                        <h4>💧 Hydration</h4>
+                        <p>${recs.hydration}</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Load education content
+        function loadEducation() {
+            const eduContent = {
+                phases: "🩸 MENSTRUAL PHASE (Days 1-5)\n• Uterine lining sheds\n• Estrogen & progesterone at lowest\n• Body temperature drops\n• Energy levels lowest\n\n🌱 FOLLICULAR PHASE (Days 6-13)\n• Follicles develop in ovaries\n• Estrogen rises steadily\n• Uterine lining rebuilds\n• Energy & mood improve\n\n✨ OVULATION PHASE (Days 14-15)\n• Egg released from ovary\n• Estrogen peaks then drops\n• LH surge triggers release\n• Peak fertility window\n\n🌙 LUTEAL PHASE (Days 16-28)\n• Corpus luteum produces progesterone\n• Body prepares for potential pregnancy\n• If no pregnancy, hormone drop triggers period\n• PMS symptoms in last week",
+                
+                hormones: "📊 ESTROGEN\n• Rises in follicular phase\n• Peaks at ovulation\n• Effects: energy, mood, libido, skin glow, brain power\n\n📊 PROGESTERONE\n• Rises after ovulation\n• Dominates luteal phase\n• Effects: calming, sleep-inducing, can cause bloating\n\n📊 TESTOSTERONE\n• Peaks at ovulation\n• Effects: confidence, libido, muscle building\n\n📊 LH & FSH\n• FSH: stimulates follicle growth\n• LH: triggers ovulation\n• Both controlled by pituitary gland",
+                
+                pmdd: "PMS: Affects 80%\n• Manageable symptoms\n• Lifestyle changes help\n\nPMDD: Affects 5-8%\n• SEVERE symptoms\n• May need medical treatment\n• Consult doctor if interfering with life",
+                
+                hygiene: "🧼 PADS: Change every 4-6 hours\n\n🧼 TAMPONS: Change every 4-8 hours\n\n🧼 CUPS: Empty every 8-12 hours\n\nWash with water, avoid douching",
+                
+                myths: "❌ MYTH: Can't exercise during periods\n✅ TRUTH: Exercise reduces cramps\n\n❌ MYTH: PMS is all in your head\n✅ TRUTH: Real hormonal changes\n\n❌ MYTH: Must be exactly 28 days\n✅ TRUTH: 21-35 days is normal",
+                
+                doctor: "⚠️ CONSULT DOCTOR IF:\n\n• Periods > 7 days\n• Cycles < 21 or > 35 days\n• Missing 3+ periods\n• Severe pain\n• Very heavy bleeding\n• Soaking pad every 1-2 hours\n• Severe PMS/PMDD"
+            };
+
+            document.getElementById('eduPhases').textContent = eduContent.phases;
+            document.getElementById('eduHormones').textContent = eduContent.hormones;
+            document.getElementById('eduPMDD').textContent = eduContent.pmdd;
+            document.getElementById('eduHygiene').textContent = eduContent.hygiene;
+            document.getElementById('eduMyths').textContent = eduContent.myths;
+            document.getElementById('eduDoctor').textContent = eduContent.doctor;
+        }
+
+        // Undo/Redo functions
+        async function undoAction() {
+            // Try API first if enabled
+            if (USE_API) {
+                try {
+                    const response = await fetch(`${API_URL}/undo`, {
+                        method: 'POST'
+                    });
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        document.getElementById('undoStatus').textContent = '✓ Undone';
+                        console.log('✅ Undone via API');
+                        
+                        // Reload history to show updated state
+                        loadHistory();
+                        
+                        setTimeout(() => {
+                            document.getElementById('undoStatus').textContent = '';
+                        }, 2000);
+                        return;
+                    }
+                } catch (error) {
+                    console.error('❌ API Error:', error);
+                    // Fall back to local undo
+                }
+            }
+            
+            // Local storage fallback
+            if (undoStack.length > 0) {
+                const lastEntry = undoStack.pop();
+                redoStack.push(lastEntry);
+                
+                // Remove from history stack
+                historyStack.pop();
+                localStorage.setItem('menstrualHistory', JSON.stringify(historyStack));
+                
+                // Restore previous state if available
+                if (historyStack.length > 0) {
+                    const prevEntry = historyStack[historyStack.length - 1];
+                    document.getElementById('dayOfCycle').value = prevEntry.day;
+                    document.getElementById('energyLevel').value = prevEntry.energy;
+                    document.getElementById('energyValue').textContent = prevEntry.energy;
+                    document.getElementById('notes').value = prevEntry.notes || '';
+                } else {
+                    // Reset to defaults if no history
+                    document.getElementById('dayOfCycle').value = 1;
+                    document.getElementById('energyLevel').value = 5;
+                    document.getElementById('energyValue').textContent = 5;
+                    document.getElementById('notes').value = '';
+                }
+                
+                document.getElementById('undoStatus').textContent = '✓ Undone';
+                setTimeout(() => {
+                    document.getElementById('undoStatus').textContent = '';
+                }, 2000);
+            } else {
+                document.getElementById('undoStatus').textContent = 'Nothing to undo';
+                setTimeout(() => {
+                    document.getElementById('undoStatus').textContent = '';
+                }, 2000);
+            }
+        }
+
+        async function redoAction() {
+            // Try API first if enabled
+            if (USE_API) {
+                try {
+                    const response = await fetch(`${API_URL}/redo`, {
+                        method: 'POST'
+                    });
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        document.getElementById('undoStatus').textContent = '✓ Redone';
+                        console.log('✅ Redone via API');
+                        
+                        // Reload history to show updated state
+                        loadHistory();
+                        
+                        setTimeout(() => {
+                            document.getElementById('undoStatus').textContent = '';
+                        }, 2000);
+                        return;
+                    }
+                } catch (error) {
+                    console.error('❌ API Error:', error);
+                    // Fall back to local redo
+                }
+            }
+            
+            // Local storage fallback
+            if (redoStack.length > 0) {
+                const entry = redoStack.pop();
+                undoStack.push(entry);
+                historyStack.push(entry);
+                localStorage.setItem('menstrualHistory', JSON.stringify(historyStack));
+                
+                // Restore the redone state
+                document.getElementById('dayOfCycle').value = entry.day;
+                document.getElementById('energyLevel').value = entry.energy;
+                document.getElementById('energyValue').textContent = entry.energy;
+                document.getElementById('notes').value = entry.notes || '';
+                
+                document.getElementById('undoStatus').textContent = '✓ Redone';
+                setTimeout(() => {
+                    document.getElementById('undoStatus').textContent = '';
+                }, 2000);
+            } else {
+                document.getElementById('undoStatus').textContent = 'Nothing to redo';
+            }
+        }
+
+        // Save to local history
+        function saveToLocalHistory(day, phase, condition, energy, notes) {
+            const entry = {
+                date: new Date().toLocaleDateString(),
+                day: day,
+                phase: phase,
+                condition: condition,
+                energy: energy,
+                notes: notes
+            };
+            
+            undoStack.push(entry);
+            historyStack.push(entry);
+            
+            // Save to localStorage
+            localStorage.setItem('menstrualHistory', JSON.stringify(historyStack));
+        }
+
+        // Load history
+        function loadHistory() {
+            const count = parseInt(document.getElementById('historyCount').value);
+            const history = JSON.parse(localStorage.getItem('menstrualHistory') || '[]');
+            
+            let html = '';
+            const recentEntries = history.slice(-count).reverse();
+            
+            recentEntries.forEach(entry => {
+                html += `
+                    <div class="history-item">
+                        <div class="history-date">${entry.date}</div>
+                        <p><strong>Phase:</strong> ${entry.phase} (Day ${entry.day})</p>
+                        <p><strong>Condition:</strong> ${entry.condition}</p>
+                        <p><strong>Energy:</strong> ${entry.energy}/10</p>
+                        ${entry.notes ? `<p><strong>Notes:</strong> ${entry.notes}</p>` : ''}
+                    </div>
+                `;
+            });
+
+            document.getElementById('historyTimeline').innerHTML = html || '<p>No history yet. Start tracking!</p>';
+        }
+    </script>
+</body>
+</html>

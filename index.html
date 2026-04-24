@@ -1,0 +1,1919 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Bloom – Smart Menstrual Health Companion</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+/* ============================================================
+   ROOT VARIABLES & RESET
+   ============================================================ */
+:root {
+  --rose:        #F4A7B9;
+  --rose-deep:   #E07FA0;
+  --rose-pale:   #FDE8EF;
+  --lavender:    #C9B8E8;
+  --lavender-pale:#F0EBFB;
+  --sage:        #A8C5A0;
+  --sage-pale:   #EAF4E8;
+  --honey:       #F5D87C;
+  --honey-pale:  #FEF9E7;
+  --sky:         #8EC5D6;
+  --sky-pale:    #E8F5FA;
+  --ink:         #2D1B35;
+  --ink-soft:    #5A4565;
+  --ink-muted:   #9B8AA5;
+  --white:       #FFFFFF;
+  --card-bg:     rgba(255,255,255,0.85);
+  --shadow-s:    0 2px 12px rgba(45,27,53,0.08);
+  --shadow-m:    0 8px 32px rgba(45,27,53,0.12);
+  --shadow-l:    0 20px 60px rgba(45,27,53,0.15);
+  --radius-s:    12px;
+  --radius-m:    20px;
+  --radius-l:    32px;
+  --transition:  0.3s cubic-bezier(0.34,1.56,0.64,1);
+}
+
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: linear-gradient(135deg, #FDE8EF 0%, #F0EBFB 35%, #E8F5FA 70%, #EAF4E8 100%);
+  min-height: 100vh;
+  color: var(--ink);
+  overflow-x: hidden;
+}
+
+/* ============================================================
+   ANIMATED BACKGROUND
+   ============================================================ */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: -1;
+  background:
+    radial-gradient(circle at 15% 20%, rgba(244,167,185,0.25) 0%, transparent 45%),
+    radial-gradient(circle at 85% 15%, rgba(201,184,232,0.25) 0%, transparent 45%),
+    radial-gradient(circle at 50% 85%, rgba(168,197,160,0.20) 0%, transparent 45%),
+    radial-gradient(circle at 90% 70%, rgba(142,197,214,0.20) 0%, transparent 40%);
+  animation: bgShift 12s ease-in-out infinite alternate;
+}
+@keyframes bgShift {
+  0%   { opacity: 1; transform: scale(1); }
+  100% { opacity: 0.85; transform: scale(1.03); }
+}
+
+/* ============================================================
+   TYPOGRAPHY
+   ============================================================ */
+h1,h2,h3 { font-family: 'Playfair Display', serif; }
+h1 { font-size: clamp(2rem, 5vw, 3.2rem); line-height: 1.15; }
+h2 { font-size: clamp(1.5rem, 3vw, 2rem); }
+h3 { font-size: 1.15rem; }
+p  { line-height: 1.7; color: var(--ink-soft); }
+
+/* ============================================================
+   LAYOUT UTILS
+   ============================================================ */
+.container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+.section    { padding: 72px 0; }
+.hidden     { display: none !important; }
+
+/* ============================================================
+   GLASS CARD
+   ============================================================ */
+.glass {
+  background: var(--card-bg);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255,255,255,0.7);
+  border-radius: var(--radius-m);
+  box-shadow: var(--shadow-m);
+}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 14px 28px;
+  border: none; border-radius: 50px; cursor: pointer;
+  font-family: 'DM Sans', sans-serif; font-size: 1rem; font-weight: 600;
+  transition: var(--transition); text-decoration: none; white-space: nowrap;
+}
+.btn-primary {
+  background: linear-gradient(135deg, var(--rose-deep), var(--lavender));
+  color: var(--white);
+  box-shadow: 0 4px 20px rgba(224,127,160,0.4);
+}
+.btn-primary:hover { transform: translateY(-2px) scale(1.03); box-shadow: 0 8px 28px rgba(224,127,160,0.5); }
+.btn-outline {
+  background: rgba(255,255,255,0.7); color: var(--ink-soft);
+  border: 1.5px solid rgba(224,127,160,0.4);
+}
+.btn-outline:hover { background: var(--rose-pale); transform: translateY(-1px); }
+.btn-sm { padding: 9px 20px; font-size: 0.9rem; }
+
+/* ============================================================
+   NAV
+   ============================================================ */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(255,255,255,0.75);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(244,167,185,0.25);
+  padding: 16px 0;
+}
+.nav-inner {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px; flex-wrap: wrap;
+}
+.logo {
+  display: flex; align-items: center; gap: 10px;
+  font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--rose-deep);
+  text-decoration: none;
+}
+.logo-icon { font-size: 1.6rem; }
+.nav-links { display: flex; gap: 8px; flex-wrap: wrap; }
+.nav-link {
+  padding: 7px 16px; border-radius: 50px; font-size: 0.88rem; font-weight: 500;
+  color: var(--ink-soft); cursor: pointer; transition: 0.2s;
+  border: none; background: none; font-family: 'DM Sans', sans-serif;
+}
+.nav-link:hover { background: var(--rose-pale); color: var(--rose-deep); }
+.nav-link.active { background: var(--rose-pale); color: var(--rose-deep); font-weight: 600; }
+
+/* ============================================================
+   HERO
+   ============================================================ */
+#hero {
+  min-height: 92vh; display: flex; align-items: center;
+  padding: 80px 0 60px;
+}
+.hero-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center;
+}
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--rose-pale); color: var(--rose-deep);
+  padding: 8px 18px; border-radius: 50px; font-size: 0.85rem; font-weight: 600;
+  margin-bottom: 20px; border: 1px solid rgba(224,127,160,0.3);
+}
+.hero-title em { color: var(--rose-deep); font-style: italic; }
+.hero-subtitle { font-size: 1.1rem; margin: 20px 0 36px; max-width: 480px; }
+.hero-cta { display: flex; gap: 14px; flex-wrap: wrap; }
+.hero-visual {
+  position: relative; display: flex; align-items: center; justify-content: center;
+  height: 420px;
+}
+.hero-orb {
+  width: 340px; height: 340px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--rose-pale), var(--lavender-pale), var(--sage-pale));
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 12px; box-shadow: var(--shadow-l);
+  animation: float 6s ease-in-out infinite;
+  position: relative; overflow: hidden;
+}
+.hero-orb::before {
+  content: '';
+  position: absolute; inset: -20px;
+  background: conic-gradient(from 0deg, transparent 0deg, rgba(244,167,185,0.2) 90deg, transparent 180deg, rgba(201,184,232,0.2) 270deg, transparent 360deg);
+  animation: spin 12s linear infinite;
+}
+@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-18px)} }
+@keyframes spin  { to { transform: rotate(360deg); } }
+.orb-emoji { font-size: 4rem; position: relative; z-index: 1; }
+.orb-text  { font-family: 'Playfair Display', serif; font-size: 1rem; color: var(--ink-soft); position: relative; z-index: 1; text-align: center; }
+.floating-pill {
+  position: absolute; background: var(--white); border-radius: 50px;
+  padding: 10px 18px; font-size: 0.82rem; font-weight: 600; color: var(--ink-soft);
+  box-shadow: var(--shadow-s); border: 1px solid rgba(255,255,255,0.9);
+  display: flex; align-items: center; gap: 7px;
+}
+.pill-1 { top: 60px; left: -10px; animation: floatPill 5s ease-in-out infinite; }
+.pill-2 { top: 130px; right: -20px; animation: floatPill 5s ease-in-out 1.5s infinite; }
+.pill-3 { bottom: 100px; left: 0; animation: floatPill 5s ease-in-out 3s infinite; }
+@keyframes floatPill { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+
+/* ============================================================
+   SECTION HEADERS
+   ============================================================ */
+.section-header { text-align: center; margin-bottom: 48px; }
+.section-tag {
+  display: inline-block;
+  background: var(--rose-pale); color: var(--rose-deep);
+  padding: 6px 16px; border-radius: 50px; font-size: 0.82rem; font-weight: 600;
+  margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.08em;
+}
+.section-header p { font-size: 1.05rem; max-width: 580px; margin: 12px auto 0; }
+
+/* ============================================================
+   SYMPTOM & MOOD CARDS
+   ============================================================ */
+#tracker { background: transparent; }
+
+.tracker-card { padding: 40px; margin-bottom: 32px; }
+.tracker-card h3 { margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+
+.chips-grid {
+  display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px;
+}
+.chip {
+  padding: 10px 18px; border-radius: 50px; cursor: pointer;
+  font-size: 0.88rem; font-weight: 500; transition: var(--transition);
+  border: 1.5px solid transparent; user-select: none;
+  background: rgba(255,255,255,0.7);
+  border-color: rgba(155,138,165,0.25);
+  color: var(--ink-soft);
+  display: flex; align-items: center; gap: 6px;
+}
+.chip:hover { transform: translateY(-2px) scale(1.04); box-shadow: var(--shadow-s); }
+.chip.selected {
+  background: linear-gradient(135deg, var(--rose-deep), var(--lavender));
+  color: white; border-color: transparent;
+  transform: scale(1.06); box-shadow: 0 4px 16px rgba(224,127,160,0.4);
+}
+.chip-symptom.selected { background: linear-gradient(135deg, var(--rose-deep), #E07FA0); }
+.chip-mood.selected    { background: linear-gradient(135deg, var(--lavender), #A891D9); }
+
+.analyze-wrap { text-align: center; margin-top: 32px; }
+.analyze-wrap p { margin-bottom: 16px; font-size: 0.9rem; }
+
+/* ============================================================
+   PHASE RESULT BANNER
+   ============================================================ */
+#results { scroll-margin-top: 80px; }
+.result-banner {
+  padding: 40px; margin-bottom: 32px;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px;
+}
+.result-stat {
+  text-align: center; padding: 24px 16px; border-radius: var(--radius-s);
+  background: rgba(255,255,255,0.6);
+}
+.result-stat .stat-icon  { font-size: 2.5rem; margin-bottom: 10px; }
+.result-stat .stat-label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-muted); margin-bottom: 4px; }
+.result-stat .stat-value { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--ink); }
+
+/* Phase colors */
+.phase-menstrual  { --phase-color: #F4A7B9; --phase-bg: #FDE8EF; }
+.phase-follicular { --phase-color: #F5D87C; --phase-bg: #FEF9E7; }
+.phase-ovulation  { --phase-color: #A8C5A0; --phase-bg: #EAF4E8; }
+.phase-luteal     { --phase-color: #C9B8E8; --phase-bg: #F0EBFB; }
+
+/* ============================================================
+   FOOD SECTION
+   ============================================================ */
+.filter-bar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 28px; align-items: center; }
+.filter-label { font-size: 0.88rem; font-weight: 600; color: var(--ink-muted); margin-right: 4px; }
+.filter-btn {
+  padding: 8px 18px; border-radius: 50px; border: 1.5px solid rgba(155,138,165,0.3);
+  background: rgba(255,255,255,0.7); cursor: pointer; font-size: 0.85rem; font-weight: 500;
+  color: var(--ink-soft); transition: 0.2s; font-family: 'DM Sans', sans-serif;
+}
+.filter-btn.active, .filter-btn:hover { background: var(--rose-pale); border-color: var(--rose-deep); color: var(--rose-deep); }
+
+.food-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+.food-card {
+  padding: 24px; border-radius: var(--radius-m);
+  background: var(--card-bg); border: 1px solid rgba(255,255,255,0.8);
+  box-shadow: var(--shadow-s); transition: var(--transition);
+  position: relative; overflow: hidden;
+}
+.food-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-m); }
+.food-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+  background: linear-gradient(90deg, var(--rose), var(--lavender));
+}
+.food-emoji   { font-size: 2.4rem; margin-bottom: 10px; }
+.food-name    { font-family: 'Playfair Display', serif; font-size: 1.1rem; margin-bottom: 8px; }
+.food-nutrients { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+.nutrient-tag {
+  padding: 3px 10px; border-radius: 50px; font-size: 0.75rem; font-weight: 600;
+  background: var(--lavender-pale); color: var(--ink-soft);
+}
+.food-benefit { font-size: 0.88rem; color: var(--ink-soft); margin-bottom: 12px; line-height: 1.5; }
+.food-why     { font-size: 0.82rem; padding: 10px 14px; border-radius: var(--radius-s);
+                background: var(--rose-pale); color: var(--rose-deep); font-style: italic; }
+.stars        { color: var(--honey); font-size: 0.9rem; margin-bottom: 8px; }
+.food-badge   {
+  position: absolute; top: 16px; right: 16px;
+  font-size: 0.7rem; font-weight: 700; padding: 3px 10px; border-radius: 50px;
+  background: var(--sage-pale); color: var(--sage);
+}
+
+/* ============================================================
+   YOGA SECTION
+   ============================================================ */
+.yoga-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; }
+.yoga-card {
+  background: var(--card-bg); border-radius: var(--radius-m); overflow: hidden;
+  box-shadow: var(--shadow-s); border: 1px solid rgba(255,255,255,0.8);
+  transition: var(--transition);
+}
+.yoga-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-m); }
+.yoga-visual {
+  height: 180px; display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, var(--sage-pale), var(--sky-pale));
+  font-size: 5rem; position: relative;
+}
+.yoga-visual::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+  height: 40px;
+  background: linear-gradient(to top, var(--card-bg), transparent);
+}
+.yoga-body { padding: 20px; }
+.yoga-name  { font-family: 'Playfair Display', serif; font-size: 1.15rem; margin-bottom: 6px; }
+.difficulty { font-size: 0.78rem; font-weight: 600; padding: 3px 10px; border-radius: 50px; display: inline-block; margin-bottom: 10px; }
+.diff-easy   { background: var(--sage-pale); color: var(--sage); }
+.diff-medium { background: var(--honey-pale); color: #B89000; }
+.diff-hard   { background: var(--rose-pale); color: var(--rose-deep); }
+.yoga-steps  { font-size: 0.85rem; color: var(--ink-soft); margin-bottom: 12px; }
+.yoga-steps ol { padding-left: 18px; display: flex; flex-direction: column; gap: 5px; }
+.yoga-benefit { font-size: 0.82rem; background: var(--sage-pale); padding: 8px 12px; border-radius: var(--radius-s); color: var(--ink-soft); }
+
+/* ============================================================
+   BREATHING SECTION
+   ============================================================ */
+.breathing-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; }
+.breath-card {
+  padding: 32px; background: var(--card-bg); border-radius: var(--radius-m);
+  box-shadow: var(--shadow-s); border: 1px solid rgba(255,255,255,0.8);
+  text-align: center; transition: var(--transition);
+}
+.breath-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-m); }
+.breath-name { font-family: 'Playfair Display', serif; font-size: 1.2rem; margin-bottom: 8px; }
+.breath-meta { font-size: 0.82rem; color: var(--ink-muted); margin-bottom: 20px; }
+
+/* Animated breathing circle */
+.breath-circle-wrap { position: relative; width: 160px; height: 160px; margin: 0 auto 20px; }
+.breath-circle {
+  width: 100%; height: 100%; border-radius: 50%;
+  background: radial-gradient(circle, var(--sky-pale), var(--lavender-pale));
+  border: 3px solid var(--lavender);
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column;
+  font-size: 0.9rem; font-weight: 600; color: var(--ink-soft);
+  cursor: pointer; transition: 0.1s;
+  user-select: none;
+}
+.breath-circle.animating { animation: breathe var(--breathe-duration, 8s) ease-in-out infinite; }
+@keyframes breathe {
+  0%,100% { transform: scale(1);   background: radial-gradient(circle, var(--sky-pale), var(--lavender-pale)); }
+  40%      { transform: scale(1.35); background: radial-gradient(circle, var(--rose-pale), var(--lavender-pale)); }
+  70%      { transform: scale(1.35); background: radial-gradient(circle, var(--rose-pale), var(--lavender-pale)); }
+}
+.breath-label { font-size: 0.85rem; font-weight: 700; }
+.breath-count { font-size: 2rem; font-weight: 300; color: var(--ink-muted); }
+.breath-instructions { font-size: 0.88rem; color: var(--ink-soft); margin-bottom: 16px; line-height: 1.6; }
+.start-breath { margin-top: 12px; }
+
+/* ============================================================
+   DAILY REPORT
+   ============================================================ */
+.report-box {
+  padding: 40px;
+  background: linear-gradient(135deg, rgba(244,167,185,0.15), rgba(201,184,232,0.15));
+}
+.report-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-top: 24px; }
+.report-item {
+  padding: 20px; background: rgba(255,255,255,0.7); border-radius: var(--radius-s);
+}
+.report-item .ri-label { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-muted); margin-bottom: 6px; }
+.report-item .ri-value { font-family: 'Playfair Display', serif; font-size: 1.1rem; }
+.report-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.report-chip {
+  padding: 3px 10px; border-radius: 50px; font-size: 0.78rem;
+  background: var(--rose-pale); color: var(--rose-deep);
+}
+.save-btn-wrap { text-align: center; margin-top: 28px; }
+.save-toast {
+  display: inline-block; background: var(--sage); color: white;
+  padding: 8px 20px; border-radius: 50px; font-size: 0.88rem; margin-top: 10px;
+  opacity: 0; transition: 0.3s;
+}
+.save-toast.show { opacity: 1; }
+
+/* ============================================================
+   HISTORY / INSIGHTS
+   ============================================================ */
+.history-grid { display: grid; gap: 16px; }
+.history-entry {
+  padding: 20px 24px; background: var(--card-bg); border-radius: var(--radius-s);
+  box-shadow: var(--shadow-s); display: flex; align-items: center; gap: 20px;
+  flex-wrap: wrap; border-left: 4px solid var(--rose);
+}
+.history-date { font-size: 0.82rem; color: var(--ink-muted); min-width: 100px; }
+.history-phase { font-weight: 600; color: var(--ink); }
+.history-cond  { font-size: 0.88rem; color: var(--ink-soft); flex: 1; }
+.history-chips { display: flex; flex-wrap: wrap; gap: 5px; }
+.empty-history { text-align: center; padding: 48px; color: var(--ink-muted); font-size: 1rem; }
+.insights-box  { padding: 28px; margin-top: 24px; background: linear-gradient(135deg, var(--honey-pale), var(--lavender-pale)); }
+.insight-item  { display: flex; gap: 12px; align-items: flex-start; padding: 12px 0; border-bottom: 1px solid rgba(155,138,165,0.15); }
+.insight-item:last-child { border-bottom: none; }
+.insight-icon  { font-size: 1.4rem; flex-shrink: 0; }
+.insight-text  { font-size: 0.9rem; color: var(--ink-soft); }
+
+/* ============================================================
+   EDUCATION SECTION
+   ============================================================ */
+.edu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+.edu-card {
+  padding: 28px; border-radius: var(--radius-m);
+  box-shadow: var(--shadow-s); transition: var(--transition);
+  cursor: pointer;
+}
+.edu-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-m); }
+.edu-phase { font-size: 2rem; margin-bottom: 14px; }
+.edu-name   { font-family: 'Playfair Display', serif; font-size: 1.15rem; margin-bottom: 8px; }
+.edu-days   { font-size: 0.82rem; font-weight: 600; opacity: 0.7; margin-bottom: 10px; }
+.edu-body   { font-size: 0.88rem; line-height: 1.6; }
+.edu-hormones { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.hormone-tag {
+  font-size: 0.75rem; padding: 3px 10px; border-radius: 50px;
+  background: rgba(255,255,255,0.6); font-weight: 600;
+}
+.edu-card.menstrual  { background: linear-gradient(135deg, #FDE8EF, #FDD0E0); }
+.edu-card.follicular { background: linear-gradient(135deg, #FEF9E7, #FDF1C0); }
+.edu-card.ovulation  { background: linear-gradient(135deg, #EAF4E8, #D5EBD1); }
+.edu-card.luteal     { background: linear-gradient(135deg, #F0EBFB, #E3D9F7); }
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+footer {
+  text-align: center; padding: 40px 24px;
+  border-top: 1px solid rgba(244,167,185,0.25);
+  color: var(--ink-muted); font-size: 0.88rem;
+}
+footer .footer-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--rose-deep); margin-bottom: 10px; }
+footer p { margin: 4px 0; }
+
+/* ============================================================
+   ENERGY BAR
+   ============================================================ */
+.energy-bar-wrap { margin-top: 8px; }
+.energy-bar {
+  height: 8px; border-radius: 50px;
+  background: linear-gradient(90deg, var(--rose), var(--honey), var(--sage));
+  width: 0%; transition: width 1s ease; max-width: 100%;
+}
+.energy-label { font-size: 0.8rem; color: var(--ink-muted); margin-top: 5px; }
+
+/* ============================================================
+   PREDICTIVE INSIGHTS CARD
+   ============================================================ */
+.predict-card {
+  padding: 28px;
+  background: linear-gradient(135deg, var(--lavender-pale), var(--rose-pale));
+  margin-bottom: 32px;
+}
+.predict-card h3 { margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+.predict-list { display: flex; flex-direction: column; gap: 10px; }
+.predict-item { display: flex; gap: 12px; align-items: flex-start; }
+.predict-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--rose-deep); flex-shrink: 0; margin-top: 5px; }
+
+/* ============================================================
+   SCROLL ANIMATIONS
+   ============================================================ */
+.fade-in { opacity: 0; transform: translateY(30px); transition: opacity 0.6s ease, transform 0.6s ease; }
+.fade-in.visible { opacity: 1; transform: translateY(0); }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 768px) {
+  .hero-grid { grid-template-columns: 1fr; }
+  .hero-visual { height: 300px; }
+  .hero-orb { width: 250px; height: 250px; }
+  .orb-emoji { font-size: 3rem; }
+  .tracker-card { padding: 24px; }
+  .result-banner { grid-template-columns: 1fr 1fr; }
+  nav .nav-links { display: none; }
+}
+@media (max-width: 480px) {
+  .result-banner { grid-template-columns: 1fr; }
+  .hero-cta { flex-direction: column; }
+}
+
+/* ============================================================
+   PERIOD DATE INPUT
+   ============================================================ */
+.period-date-card {
+  padding: 32px 40px; margin-bottom: 32px;
+  display: flex; align-items: center; gap: 32px; flex-wrap: wrap;
+}
+.period-date-card h3 { margin-bottom: 0; display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.date-input-wrap { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.date-input {
+  padding: 12px 20px; border-radius: 50px;
+  border: 1.5px solid rgba(224,127,160,0.4);
+  background: rgba(255,255,255,0.8); font-family: 'DM Sans', sans-serif;
+  font-size: 0.95rem; color: var(--ink); outline: none; cursor: pointer;
+  transition: 0.2s;
+}
+.date-input:focus { border-color: var(--rose-deep); box-shadow: 0 0 0 3px rgba(224,127,160,0.15); }
+.cycle-info-pills { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 0; }
+.cycle-pill {
+  padding: 8px 16px; border-radius: 50px; font-size: 0.82rem; font-weight: 600;
+  background: var(--rose-pale); color: var(--rose-deep);
+  border: 1px solid rgba(224,127,160,0.25); display: flex; align-items: center; gap: 6px;
+}
+.cycle-pill.green  { background: var(--sage-pale);     color: var(--sage); }
+.cycle-pill.purple { background: var(--lavender-pale); color: var(--ink-soft); }
+.cycle-pill.honey  { background: var(--honey-pale);    color: #8a6e00; }
+
+/* Breathing match badge */
+.breath-match-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 0.75rem; font-weight: 700; padding: 3px 10px;
+  border-radius: 50px; background: var(--rose-pale); color: var(--rose-deep);
+  margin-bottom: 6px;
+}
+.breath-match-badge.high  { background: var(--rose-pale);     color: var(--rose-deep); }
+.breath-match-badge.med   { background: var(--lavender-pale); color: var(--ink-soft); }
+.breath-match-badge.low   { background: var(--sage-pale);     color: var(--sage); }
+
+/* ============================================================
+   AI CHATBOT FAB
+   ============================================================ */
+.chat-fab {
+  position: fixed; bottom: 28px; right: 28px; z-index: 500;
+  width: 62px; height: 62px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--rose-deep), var(--lavender));
+  border: none; cursor: pointer; box-shadow: 0 6px 24px rgba(224,127,160,0.5);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.6rem; transition: var(--transition);
+  animation: fabPulse 3s ease-in-out infinite;
+}
+.chat-fab:hover { transform: scale(1.12); box-shadow: 0 10px 32px rgba(224,127,160,0.6); }
+@keyframes fabPulse {
+  0%,100% { box-shadow: 0 6px 24px rgba(224,127,160,0.5); }
+  50%      { box-shadow: 0 6px 36px rgba(224,127,160,0.75); }
+}
+.chat-fab-tooltip {
+  position: absolute; right: 72px; bottom: 12px;
+  background: var(--ink); color: white; font-size: 0.78rem; font-weight: 600;
+  padding: 6px 14px; border-radius: 50px; white-space: nowrap;
+  opacity: 0; pointer-events: none; transition: 0.2s;
+}
+.chat-fab:hover .chat-fab-tooltip { opacity: 1; }
+
+/* Chatbot modal */
+.chat-modal {
+  position: fixed; bottom: 104px; right: 28px; z-index: 600;
+  width: 360px; max-height: 520px;
+  background: rgba(255,255,255,0.97);
+  border-radius: var(--radius-m); box-shadow: var(--shadow-l);
+  border: 1px solid rgba(244,167,185,0.3);
+  display: flex; flex-direction: column; overflow: hidden;
+  transform: scale(0.85) translateY(20px); opacity: 0;
+  pointer-events: none; transition: 0.3s cubic-bezier(0.34,1.56,0.64,1);
+}
+.chat-modal.open { transform: scale(1) translateY(0); opacity: 1; pointer-events: all; }
+.chat-header {
+  padding: 16px 20px; background: linear-gradient(135deg, var(--rose-deep), var(--lavender));
+  color: white; display: flex; align-items: center; gap: 10px;
+}
+.chat-header-icon { font-size: 1.4rem; }
+.chat-header-info .chat-title { font-family: 'Playfair Display', serif; font-size: 1rem; }
+.chat-header-info .chat-sub   { font-size: 0.75rem; opacity: 0.85; }
+.chat-close { margin-left: auto; background: none; border: none; color: white; font-size: 1.2rem; cursor: pointer; opacity: 0.8; }
+.chat-close:hover { opacity: 1; }
+.chat-messages {
+  flex: 1; overflow-y: auto; padding: 16px; display: flex;
+  flex-direction: column; gap: 12px;
+}
+.chat-bubble {
+  max-width: 85%; padding: 10px 14px; border-radius: 16px;
+  font-size: 0.88rem; line-height: 1.5;
+}
+.chat-bubble.bot  { background: var(--rose-pale); color: var(--ink); align-self: flex-start; border-bottom-left-radius: 4px; }
+.chat-bubble.user { background: linear-gradient(135deg, var(--rose-deep), var(--lavender)); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+.chat-input-row {
+  padding: 12px 16px; border-top: 1px solid rgba(244,167,185,0.2);
+  display: flex; gap: 8px;
+}
+.chat-input {
+  flex: 1; padding: 10px 16px; border-radius: 50px;
+  border: 1.5px solid rgba(224,127,160,0.3); font-family: 'DM Sans', sans-serif;
+  font-size: 0.88rem; outline: none; background: var(--rose-pale);
+}
+.chat-input:focus { border-color: var(--rose-deep); }
+.chat-send {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--rose-deep), var(--lavender));
+  border: none; color: white; cursor: pointer; font-size: 1rem;
+  display: flex; align-items: center; justify-content: center;
+  transition: 0.2s; flex-shrink: 0;
+}
+.chat-send:hover { transform: scale(1.1); }
+  font-size: 0.75rem; color: var(--ink-muted); text-align: center;
+  padding: 6px 16px; border-top: 1px solid rgba(244,167,185,0.15);
+}
+@media (max-width: 480px) {
+  .chat-modal { width: calc(100vw - 32px); right: 16px; bottom: 96px; }
+  .chat-fab   { right: 16px; bottom: 16px; }
+}
+
+/* ============================================================
+   LOADING SPINNER
+   ============================================================ */
+.spinner-overlay {
+  position: fixed; inset: 0; z-index: 999;
+  background: rgba(253,232,239,0.7); backdrop-filter: blur(8px);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 20px;
+}
+.spinner {
+  width: 60px; height: 60px; border-radius: 50%;
+  border: 4px solid var(--rose-pale);
+  border-top-color: var(--rose-deep);
+  animation: spin 0.8s linear infinite;
+}
+.spinner-text { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--ink-soft); }
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     NAV
+     ============================================================ -->
+<nav>
+  <div class="container nav-inner">
+    <a class="logo" href="#hero">
+      <span class="logo-icon">🌸</span> Bloom
+    </a>
+    <div class="nav-links">
+      <button class="nav-link" onclick="navTo('tracker')">Track</button>
+      <button class="nav-link" onclick="navTo('nutrition')">Nutrition</button>
+      <button class="nav-link" onclick="navTo('yoga')">Yoga</button>
+      <button class="nav-link" onclick="navTo('breathing')">Breathe</button>
+      <button class="nav-link" onclick="navTo('history')">History</button>
+      <button class="nav-link" onclick="navTo('education')">Learn</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ============================================================
+     HERO
+     ============================================================ -->
+<section id="hero" class="section">
+  <div class="container">
+    <div class="hero-grid">
+      <div>
+        <div class="hero-badge">✨ Your Intelligent Health Companion</div>
+        <h1>Understand your body,<br><em>one phase at a time</em></h1>
+        <p class="hero-subtitle">Bloom listens to your symptoms and moods, detects your cycle phase, and guides you through personalised nutrition, yoga, and breathing routines.</p>
+        <div class="hero-cta">
+          <button class="btn btn-primary" onclick="navTo('tracker')">🌸 Start Tracking</button>
+          <button class="btn btn-outline" onclick="navTo('education')">Learn about your cycle</button>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-orb">
+          <div class="orb-emoji">🌸</div>
+          <div class="orb-text">Smart Health<br>Companion</div>
+        </div>
+        <div class="floating-pill pill-1">🥗 Nutrition guide</div>
+        <div class="floating-pill pill-2">🧘 Yoga routines</div>
+        <div class="floating-pill pill-3">🌬️ Breathe better</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     TRACKER
+     ============================================================ -->
+<section id="tracker" class="section">
+  <div class="container">
+    <div class="section-header fade-in">
+      <div class="section-tag">Step 1 — How are you feeling?</div>
+      <h2>Select your symptoms &amp; moods</h2>
+      <p>Choose everything that resonates. Bloom will analyse your selections and build your personalised health plan.</p>
+    </div>
+
+    <!-- Period Date Input -->
+    <div class="glass period-date-card fade-in">
+      <h3>🗓️ Last Period</h3>
+      <div class="date-input-wrap">
+        <input type="date" class="date-input" id="lastPeriodDate"
+               max="" placeholder="Select date"
+               onchange="onDateChange(this.value)"/>
+        <div class="cycle-info-pills" id="cyclePills"></div>
+      </div>
+    </div>
+
+    <!-- Symptoms -->
+    <div class="glass tracker-card fade-in">
+      <h3>🩺 Symptoms <span style="font-family:'DM Sans';font-size:0.88rem;color:var(--ink-muted);font-weight:400">— select all that apply</span></h3>
+      <div class="chips-grid" id="symptomsGrid"></div>
+    </div>
+
+    <!-- Moods -->
+    <div class="glass tracker-card fade-in">
+      <h3>💜 Moods <span style="font-family:'DM Sans';font-size:0.88rem;color:var(--ink-muted);font-weight:400">— how are you feeling emotionally?</span></h3>
+      <div class="chips-grid" id="moodsGrid"></div>
+    </div>
+
+    <div class="analyze-wrap fade-in">
+      <p>Select at least one symptom or mood to get started.</p>
+      <button class="btn btn-primary" style="font-size:1.05rem;padding:16px 40px" onclick="analyze()">🔍 Analyze My Health</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     RESULTS
+     ============================================================ -->
+<section id="results" class="section hidden">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">Your Analysis</div>
+      <h2>Here's what Bloom found 🌸</h2>
+    </div>
+
+    <div class="glass result-banner" id="resultBanner"></div>
+
+    <!-- Predictive Insights -->
+    <div class="glass predict-card fade-in" id="predictCard"></div>
+  </div>
+</section>
+
+<!-- ============================================================
+     NUTRITION
+     ============================================================ -->
+<section id="nutrition" class="section hidden">
+  <div class="container">
+    <div class="section-header fade-in">
+      <div class="section-tag">Step 2 — Nourish</div>
+      <h2>🥗 Foods curated for you</h2>
+      <p>Personalised to your detected phase and condition for maximum benefit.</p>
+    </div>
+    <div class="filter-bar">
+      <span class="filter-label">Filter:</span>
+      <button class="filter-btn active" data-filter="all" onclick="filterFood(this)">All</button>
+      <button class="filter-btn" data-filter="vegetarian" onclick="filterFood(this)">🥦 Vegetarian</button>
+      <button class="filter-btn" data-filter="vegan" onclick="filterFood(this)">🌱 Vegan</button>
+    </div>
+    <div class="food-grid" id="foodGrid"></div>
+  </div>
+</section>
+
+<!-- ============================================================
+     YOGA
+     ============================================================ -->
+<section id="yoga" class="section hidden">
+  <div class="container">
+    <div class="section-header fade-in">
+      <div class="section-tag">Step 3 — Move</div>
+      <h2>🧘 Yoga for your phase</h2>
+      <p>Gentle, targeted poses matched to your energy level and symptoms.</p>
+    </div>
+    <div class="yoga-grid" id="yogaGrid"></div>
+  </div>
+</section>
+
+<!-- ============================================================
+     BREATHING
+     ============================================================ -->
+<section id="breathing" class="section hidden">
+  <div class="container">
+    <div class="section-header fade-in">
+      <div class="section-tag">Step 4 — Breathe</div>
+      <h2>🌬️ Breathing exercises</h2>
+      <p>Calm your nervous system, boost energy, and find balance — tailored to your mood.</p>
+    </div>
+    <div class="breathing-grid" id="breathingGrid"></div>
+  </div>
+</section>
+
+<!-- ============================================================
+     DAILY REPORT
+     ============================================================ -->
+<section id="report" class="section hidden">
+  <div class="container">
+    <div class="section-header fade-in">
+      <div class="section-tag">Your Summary</div>
+      <h2>📊 Daily Health Report</h2>
+    </div>
+    <div class="glass report-box" id="reportBox"></div>
+    <div class="save-btn-wrap">
+      <button class="btn btn-primary" onclick="saveReport()">💾 Save to History</button>
+      <div class="save-toast" id="saveToast">✅ Saved successfully!</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     HISTORY
+     ============================================================ -->
+<section id="history" class="section">
+  <div class="container">
+    <div class="section-header fade-in">
+      <div class="section-tag">Your Journey</div>
+      <h2>📜 History &amp; Insights</h2>
+    </div>
+    <div id="historyGrid" class="history-grid"></div>
+    <div class="glass insights-box fade-in" id="insightsBox" style="margin-top:32px"></div>
+  </div>
+</section>
+
+<!-- ============================================================
+     EDUCATION
+     ============================================================ -->
+<section id="education" class="section">
+  <div class="container">
+    <div class="section-header fade-in">
+      <div class="section-tag">Cycle Education</div>
+      <h2>📚 Understand your cycle</h2>
+      <p>Learn about the four phases, key hormones, and what your body goes through each month.</p>
+    </div>
+    <div class="edu-grid" id="eduGrid"></div>
+  </div>
+</section>
+
+<!-- ============================================================
+     FOOTER
+     ============================================================ -->
+<footer>
+  <div class="footer-logo">🌸 Bloom</div>
+  <p>Your smart menstrual health companion</p>
+  <p style="margin-top:8px;font-size:0.8rem">Made with 💜 for every body · Not a substitute for medical advice</p>
+</footer>
+
+<!-- ============================================================
+     AI CHATBOT FAB
+     ============================================================ -->
+<button class="chat-fab" onclick="toggleChat()" aria-label="Open Bloom AI assistant">
+  🌸
+  <span class="chat-fab-tooltip">Ask Bloom AI</span>
+</button>
+
+<div class="chat-modal" id="chatModal">
+  <div class="chat-header">
+    <div class="chat-header-icon">🌸</div>
+    <div class="chat-header-info">
+      <div class="chat-title">Bloom AI</div>
+      <div class="chat-sub">Your menstrual health assistant</div>
+    </div>
+    <button class="chat-close" onclick="toggleChat()">✕</button>
+  </div>
+  <div class="chat-messages" id="chatMessages">
+    <div class="chat-bubble bot">Hi there 🌸 I'm Bloom AI! Ask me anything about your cycle, symptoms, food, or yoga recommendations.</div>
+  </div>
+  <div class="chat-input-row">
+    <input class="chat-input" id="chatInput" placeholder="Ask something…"
+           onkeydown="if(event.key==='Enter') sendChat()"/>
+    <button class="chat-send" onclick="sendChat()">➤</button>
+  </div>
+</div>
+
+<!-- Loading overlay -->
+<div class="spinner-overlay hidden" id="loadingOverlay">
+  <div class="spinner"></div>
+  <div class="spinner-text">Analysing your health…</div>
+</div>
+
+<!-- ============================================================
+     JAVASCRIPT
+     ============================================================ -->
+<script>
+/* ============================================================
+   DATA
+   ============================================================ */
+const SYMPTOMS = [
+  {id:'cramps',label:'🔴 Cramps'},{id:'bloating',label:'🫀 Bloating'},
+  {id:'fatigue',label:'😴 Fatigue'},{id:'nausea',label:'🤢 Nausea'},
+  {id:'headache',label:'🤕 Headache'},{id:'acne',label:'✨ Acne'},
+  {id:'insomnia',label:'🌙 Insomnia'},{id:'backpain',label:'🔙 Back pain'},
+  {id:'breastTenderness',label:'💗 Breast tenderness'},{id:'moodSwings',label:'🎭 Mood swings'},
+  {id:'hotFlashes',label:'🌡️ Hot flashes'},{id:'cravings',label:'🍫 Cravings'},
+  {id:'spotting',label:'🩸 Spotting'},{id:'dizziness',label:'💫 Dizziness'},
+  {id:'jointPain',label:'🦴 Joint pain'},{id:'waterRetention',label:'💧 Water retention'},
+  {id:'digestiveIssues',label:'🫄 Digestive issues'},{id:'lowLibido',label:'💤 Low libido'},
+  {id:'skinSensitivity',label:'🌸 Skin sensitivity'},{id:'hairLoss',label:'💇 Hair loss'},
+  {id:'weightGain',label:'⚖️ Weight gain'},{id:'constipation',label:'🚫 Constipation'},
+  {id:'diarrhea',label:'🌊 Diarrhoea'},{id:'palpitations',label:'💓 Palpitations'},
+  {id:'brainFog',label:'🌫️ Brain fog'},{id:'coldHands',label:'🥶 Cold hands/feet'},
+  {id:'nightSweats',label:'🌧️ Night sweats'},{id:'jawPain',label:'😬 Jaw tension'},
+  {id:'eyeTension',label:'👁️ Eye tension'},{id:'lowerAbdominalPressure',label:'🫁 Lower abdominal pressure'},
+  {id:'shoulderTension',label:'💪 Shoulder tension'},{id:'irritableBowel',label:'🩺 Irritable bowel'},
+  {id:'lowEnergy',label:'⚡ Low energy'},{id:'foodSensitivity',label:'🍽️ Food sensitivity'},
+  {id:'hipPain',label:'🦵 Hip pain'}
+];
+
+const MOODS = [
+  {id:'anxious',label:'😰 Anxious'},{id:'calm',label:'😌 Calm'},
+  {id:'irritable',label:'😤 Irritable'},{id:'energetic',label:'⚡ Energetic'},
+  {id:'depressed',label:'😢 Depressed'},{id:'focused',label:'🎯 Focused'},
+  {id:'emotional',label:'🥹 Emotional'},{id:'hopeful',label:'🌟 Hopeful'},
+  {id:'overwhelmed',label:'🌀 Overwhelmed'},{id:'content',label:'☺️ Content'},
+  {id:'lonely',label:'🫂 Lonely'},{id:'motivated',label:'🚀 Motivated'},
+  {id:'sensitive',label:'🌺 Sensitive'},{id:'creative',label:'🎨 Creative'},
+  {id:'sluggish',label:'🐌 Sluggish'},{id:'tearful',label:'😭 Tearful'},
+  {id:'angry',label:'😡 Angry'},{id:'peaceful',label:'🕊️ Peaceful'},
+  {id:'scattered',label:'🍂 Scattered'},{id:'grounded',label:'🌿 Grounded'},
+  {id:'withdrawn',label:'🐢 Withdrawn'},{id:'playful',label:'🎉 Playful'}
+];
+
+/* ============================================================
+   PHASE DETECTION ENGINE
+   Rule-based weighted scoring
+   ============================================================ */
+const PHASE_RULES = {
+  menstrual: {
+    symptoms: ['cramps','bloating','fatigue','nausea','backpain','spotting','diarrhea','lowerAbdominalPressure','constipation','digestiveIssues'],
+    moods:    ['depressed','emotional','tearful','withdrawn','sluggish','irritable'],
+    weight:   3
+  },
+  follicular: {
+    symptoms: ['acne','brainFog','foodSensitivity','lowEnergy'],
+    moods:    ['hopeful','motivated','creative','focused','energetic','playful'],
+    weight:   2
+  },
+  ovulation: {
+    symptoms: ['breastTenderness','hotFlashes','skinSensitivity','palpitations','jointPain'],
+    moods:    ['energetic','focused','motivated','playful','creative','content'],
+    weight:   2.5
+  },
+  luteal: {
+    symptoms: ['moodSwings','bloating','cravings','insomnia','headache','waterRetention',
+               'breastTenderness','weightGain','shoulderTension','nightSweats','acne',
+               'lowLibido','jawPain','irritableBowel','hipPain'],
+    moods:    ['anxious','irritable','overwhelmed','sensitive','emotional','angry','scattered','tearful'],
+    weight:   3
+  }
+};
+
+function detectPhase(symptoms, moods) {
+  const scores = { menstrual: 0, follicular: 0, ovulation: 0, luteal: 0 };
+
+  // Symptom + mood scoring
+  for (const [phase, rules] of Object.entries(PHASE_RULES)) {
+    symptoms.forEach(s => { if (rules.symptoms.includes(s)) scores[phase] += rules.weight; });
+    moods.forEach(m    => { if (rules.moods.includes(m))    scores[phase] += rules.weight * 0.6; });
+  }
+
+  // Calendar signal: if user entered a period date, give it strong weight
+  if (state.calendarPhase) {
+    // Calendar contributes ~40% of the signal — enough to confirm but not override strong symptoms
+    const total = Object.values(scores).reduce((a,b) => a+b, 0) || 1;
+    scores[state.calendarPhase] += total * 0.65;
+  }
+
+  return Object.entries(scores).sort((a,b) => b[1]-a[1])[0][0];
+}
+
+function detectCondition(symptoms, moods, phase) {
+  const has = arr => items => items.some(i => arr.includes(i));
+  const hasSym = has(symptoms); const hasMood = has(moods);
+
+  if (hasSym(['cramps','nausea','backpain','lowerAbdominalPressure'])) return 'Dysmenorrhea (period pain)';
+  if (hasMood(['anxious','overwhelmed','scattered']) && hasSym(['moodSwings','insomnia'])) return 'PMS / Anxiety';
+  if (hasSym(['fatigue','lowEnergy','brainFog','sluggish'])) return 'Cycle fatigue';
+  if (hasSym(['bloating','waterRetention','weightGain','digestiveIssues'])) return 'Bloating & fluid retention';
+  if (hasMood(['depressed','tearful','withdrawn','lonely'])) return 'Emotional sensitivity';
+  if (hasSym(['headache','dizziness','palpitations'])) return 'Vascular symptoms';
+  if (hasSym(['acne','skinSensitivity','hairLoss'])) return 'Hormonal skin / hair changes';
+  if (hasMood(['energetic','motivated','focused'])) return 'Peak energy phase';
+  if (hasMood(['calm','peaceful','grounded'])) return 'Rest & restoration phase';
+  return 'General hormonal fluctuation';
+}
+
+function estimateEnergy(symptoms, moods, phase) {
+  let e = 60;
+  const drainers = ['fatigue','insomnia','cramps','nausea','headache','lowEnergy','brainFog','dizziness'];
+  const boosters  = ['energetic','motivated','focused','hopeful','creative','content','playful'];
+  drainers.forEach(s => { if (symptoms.includes(s)) e -= 10; });
+  boosters.forEach(m  => { if (moods.includes(m)) e += 8; });
+  if (phase === 'ovulation')  e = Math.min(e + 20, 100);
+  if (phase === 'menstrual')  e = Math.max(e - 15, 10);
+  if (phase === 'follicular') e = Math.min(e + 10, 100);
+  return Math.min(100, Math.max(10, e));
+}
+
+/* ============================================================
+   FOOD DATA
+   ============================================================ */
+const FOODS_DB = {
+  menstrual: [
+    { emoji:'🫐', name:'Blueberries', nutrients:['Antioxidants','Vitamin C','Manganese'],
+      benefit:'Reduce inflammation and soothe cramping. High antioxidant content fights oxidative stress during menstruation.',
+      why:'Your body is losing iron — blueberries help combat inflammation from prostaglandins causing your cramps.',
+      priority:5, vegan:true, vegetarian:true },
+    { emoji:'🥬', name:'Dark Leafy Greens', nutrients:['Iron','Folate','Vitamin K'],
+      benefit:'Replenish iron lost during menstruation. Folate supports red blood cell production.',
+      why:'Iron loss is highest right now. Greens like spinach and kale are your best friends this week.',
+      priority:5, vegan:true, vegetarian:true },
+    { emoji:'🐟', name:'Salmon', nutrients:['Omega-3','Vitamin D','B12'],
+      benefit:'Omega-3 fatty acids reduce prostaglandin production, significantly easing cramp severity.',
+      why:'Clinical studies show omega-3 can reduce period pain as effectively as ibuprofen.',
+      priority:5, vegan:false, vegetarian:false },
+    { emoji:'🍫', name:'Dark Chocolate (70%+)', nutrients:['Magnesium','Iron','Flavonoids'],
+      benefit:'Magnesium relaxes uterine muscles. Iron replaces menstrual losses. Flavonoids improve mood.',
+      why:'That chocolate craving is real — your body is asking for magnesium. This version actually helps!',
+      priority:4, vegan:true, vegetarian:true },
+    { emoji:'🫘', name:'Lentils', nutrients:['Iron','Protein','Fibre'],
+      benefit:'Plant-based iron powerhouse. Protein supports muscle repair; fibre eases digestive symptoms.',
+      why:'Perfect for plant-based iron replenishment when you\'re losing blood.',
+      priority:4, vegan:true, vegetarian:true },
+    { emoji:'🍌', name:'Banana', nutrients:['Potassium','B6','Tryptophan'],
+      benefit:'Potassium reduces bloating. B6 boosts serotonin for mood support. Natural anti-spasmodic.',
+      why:'Reduces muscle cramps via potassium and lifts mood through serotonin precursors.',
+      priority:4, vegan:true, vegetarian:true },
+  ],
+  follicular: [
+    { emoji:'🥚', name:'Eggs', nutrients:['Protein','Choline','B12','Zinc'],
+      benefit:'Choline supports new follicle development. Zinc is essential for rising oestrogen levels.',
+      why:'Your follicles are maturing — eggs provide exactly the nutrients FSH needs to do its job.',
+      priority:5, vegan:false, vegetarian:true },
+    { emoji:'🥑', name:'Avocado', nutrients:['Healthy fats','Vitamin E','B5'],
+      benefit:'Healthy fats support oestrogen synthesis. Vitamin E improves egg quality and hormonal balance.',
+      why:'Rising oestrogen needs fat-soluble vitamin support — avocados deliver it.',
+      priority:5, vegan:true, vegetarian:true },
+    { emoji:'🥕', name:'Fermented foods (Kimchi/Yoghurt)', nutrients:['Probiotics','B vitamins','Zinc'],
+      benefit:'Gut microbiome supports oestrogen detoxification. Probiotics reduce bloating and brain fog.',
+      why:'A healthy gut estrobolome means better hormone regulation all cycle long.',
+      priority:4, vegan:false, vegetarian:true },
+    { emoji:'🌰', name:'Pumpkin Seeds', nutrients:['Zinc','Magnesium','Iron'],
+      benefit:'Zinc is the star of the follicular phase — it triggers LH surge and promotes collagen synthesis.',
+      why:'Zinc peaks in the follicular phase. Pumpkin seeds are the richest plant source.',
+      priority:5, vegan:true, vegetarian:true },
+    { emoji:'🫛', name:'Edamame', nutrients:['Phytoestrogens','Protein','Folate'],
+      benefit:'Phytoestrogens gently support rising oestrogen. Folate promotes healthy cell division.',
+      why:'Supports the oestrogen rise needed for follicle maturation without overloading.',
+      priority:4, vegan:true, vegetarian:true },
+  ],
+  ovulation: [
+    { emoji:'🍓', name:'Strawberries', nutrients:['Vitamin C','Folate','Antioxidants'],
+      benefit:'Vitamin C supports LH surge. Antioxidants protect egg quality during ovulation window.',
+      why:'Your peak fertility window needs antioxidant protection for your eggs.',
+      priority:5, vegan:true, vegetarian:true },
+    { emoji:'🫶', name:'Flaxseeds', nutrients:['Lignans','Omega-3','Fibre'],
+      benefit:'Lignans help modulate oestrogen excess around ovulation. Fibre supports liver detox.',
+      why:'Prevents oestrogen dominance during the surge by supporting metabolic clearance.',
+      priority:4, vegan:true, vegetarian:true },
+    { emoji:'🧄', name:'Garlic', nutrients:['Allicin','Selenium','Vitamin B6'],
+      benefit:'Anti-inflammatory and circulation-boosting. Selenium supports thyroid function which regulates ovulation.',
+      why:'Good thyroid function is crucial for successful ovulation — selenium helps.',
+      priority:4, vegan:true, vegetarian:true },
+    { emoji:'🍳', name:'Eggs (free-range)', nutrients:['Vitamin D','Choline','Selenium'],
+      benefit:'Vitamin D supports progesterone production post-ovulation. Choline aids in cell signalling.',
+      why:'As you ovulate, your body prepares for luteal phase — vitamin D sets the stage.',
+      priority:5, vegan:false, vegetarian:true },
+    { emoji:'🌿', name:'Quinoa', nutrients:['Complete protein','B vitamins','Magnesium'],
+      benefit:'Complete protein sustains the energy peak of ovulation. Magnesium supports neurotransmitter balance.',
+      why:'Your energy is highest now — fuel it with balanced, clean protein.',
+      priority:4, vegan:true, vegetarian:true },
+  ],
+  luteal: [
+    { emoji:'🍠', name:'Sweet Potato', nutrients:['Vitamin B6','Potassium','Magnesium'],
+      benefit:'B6 is the anti-PMS vitamin — it regulates progesterone and reduces bloating and mood swings.',
+      why:'B6 deficiency is strongly linked to PMS severity. Sweet potato is a top source.',
+      priority:5, vegan:true, vegetarian:true },
+    { emoji:'🌰', name:'Walnuts', nutrients:['Omega-3','Melatonin','Serotonin'],
+      benefit:'Only nut with significant omega-3. Melatonin supports luteal-phase sleep. Boosts serotonin.',
+      why:'Luteal-phase insomnia and mood dips respond well to walnuts — eat a small handful at night.',
+      priority:5, vegan:true, vegetarian:true },
+    { emoji:'🥦', name:'Broccoli', nutrients:['DIM','Calcium','Fibre','Vitamin C'],
+      benefit:'DIM (di-indolyl methane) supports oestrogen detoxification. Calcium clinically shown to reduce PMS.',
+      why:'Studies show 1000mg calcium daily significantly reduces PMS symptoms — broccoli contributes.',
+      priority:5, vegan:true, vegetarian:true },
+    { emoji:'🍵', name:'Chamomile Tea', nutrients:['Apigenin','Antioxidants','Glycine'],
+      benefit:'Glycine reduces muscle spasms. Apigenin is a natural anxiolytic. Anti-inflammatory for cramps.',
+      why:'Anxious in the luteal phase? Chamomile\'s apigenin binds to GABA receptors like a gentle sedative.',
+      priority:4, vegan:true, vegetarian:true },
+    { emoji:'🫘', name:'Chickpeas', nutrients:['B6','Magnesium','Tryptophan'],
+      benefit:'Tryptophan converts to serotonin. Magnesium calms the nervous system and reduces cravings.',
+      why:'Cravings are your body asking for serotonin. Chickpeas give the building blocks.',
+      priority:4, vegan:true, vegetarian:true },
+    { emoji:'🍒', name:'Tart Cherries', nutrients:['Melatonin','Anthocyanins','Potassium'],
+      benefit:'Natural melatonin for luteal-phase insomnia. Anthocyanins reduce inflammatory prostaglandins.',
+      why:'Sleep issues are common in the luteal phase — tart cherries are a research-backed solution.',
+      priority:4, vegan:true, vegetarian:true },
+  ]
+};
+
+/* ============================================================
+   YOGA DATA
+   ============================================================ */
+const YOGA_DB = {
+  menstrual: [
+    { emoji:'🧸', name:'Child\'s Pose (Balasana)', difficulty:'easy',
+      steps:['Kneel on the mat with big toes touching','Sit back on your heels','Stretch arms forward or rest by sides','Hold for 2–5 minutes, breathing deeply'],
+      benefit:'Relieves lower back and uterine cramps. Calms the nervous system during heavy flow days.' },
+    { emoji:'🌙', name:'Supine Twist (Supta Matsyendrasana)', difficulty:'easy',
+      steps:['Lie on your back','Hug one knee to chest','Gently lower it across your body','Keep shoulders flat. Hold 1–2 min each side'],
+      benefit:'Releases hip and lumbar tension. Eases digestive discomfort and bloating.' },
+    { emoji:'🦋', name:'Reclining Butterfly (Supta Baddha Konasana)', difficulty:'easy',
+      steps:['Lie on your back','Bring soles of feet together','Let knees fall open to sides','Place hands on belly. Breathe for 5 min'],
+      benefit:'Opens the pelvis and inner groin. Reduces menstrual cramps and relieves fatigue.' },
+  ],
+  follicular: [
+    { emoji:'🌟', name:'Sun Salutation (Surya Namaskar)', difficulty:'medium',
+      steps:['Stand at top of mat, palms together','Inhale: raise arms overhead','Exhale: fold forward','Step back into plank, lower, upward dog, downward dog','Step forward and rise'],
+      benefit:'Energises rising oestrogen. Builds heat and enthusiasm for the growing phase.' },
+    { emoji:'💪', name:'Warrior II (Virabhadrasana II)', difficulty:'medium',
+      steps:['Stand with feet wide apart','Turn right foot out 90°, left foot in slightly','Bend right knee over right ankle','Extend arms parallel to floor. Hold 30 sec each side'],
+      benefit:'Builds strength and confidence as energy rises. Opens hips and strengthens legs.' },
+    { emoji:'🌈', name:'Camel Pose (Ustrasana)', difficulty:'hard',
+      steps:['Kneel with hips over knees','Place hands on lower back','Open chest upward, gently lower hands to heels','Hold 20–30 sec, chin to chest on exit'],
+      benefit:'Heart-opening backbend that stimulates thymus and supports immune function during follicular rise.' },
+  ],
+  ovulation: [
+    { emoji:'⚡', name:'Dancer\'s Pose (Natarajasana)', difficulty:'hard',
+      steps:['Stand on one leg','Bend other knee, hold ankle behind you','Hinge forward, extend free arm forward','Balance and hold 20–30 sec each side'],
+      benefit:'Celebrates peak energy and flexibility. Stimulates the heart chakra — perfect for ovulation.' },
+    { emoji:'🌺', name:'Bridge Pose (Setu Bandhasana)', difficulty:'easy',
+      steps:['Lie on back, knees bent, feet hip-width','Press feet into mat and lift hips','Clasp hands under your back','Hold 30–60 sec, breathing into the chest'],
+      benefit:'Stimulates abdominal organs including ovaries. Opens the heart and chest. Energising.' },
+    { emoji:'🦅', name:'Chair Pose (Utkatasana)', difficulty:'medium',
+      steps:['Stand feet together','Inhale: raise arms overhead','Exhale: bend knees as if sitting on chair','Hold for 30 sec–1 min, breathing steadily'],
+      benefit:'Peak-phase power pose. Builds thigh and core strength. Stimulates the heart and diaphragm.' },
+  ],
+  luteal: [
+    { emoji:'🌾', name:'Forward Fold (Uttanasana)', difficulty:'easy',
+      steps:['Stand hip-width apart','Exhale: hinge at hips, let upper body hang','Bend knees generously if needed','Hold 1–3 min, release head and neck fully'],
+      benefit:'Calms the nervous system. Relieves PMS headaches and tension in the shoulders and neck.' },
+    { emoji:'🌊', name:'Legs Up the Wall (Viparita Karani)', difficulty:'easy',
+      steps:['Sit sideways against a wall','Swing legs up as you lie back','Arms at sides, palms up','Stay 5–15 minutes, closing eyes'],
+      benefit:'The ultimate restoration pose. Reduces ankle swelling, calms anxiety, and improves sleep quality.' },
+    { emoji:'🌿', name:'Cat-Cow (Marjaryasana-Bitilasana)', difficulty:'easy',
+      steps:['Come to hands and knees, wrists under shoulders','Inhale: drop belly, lift head (Cow)','Exhale: round spine, tuck chin and tailbone (Cat)','Flow for 2–3 minutes'],
+      benefit:'Massages the uterus and abdominal organs. Relieves luteal bloating and back pain.' },
+  ]
+};
+
+/* ============================================================
+   BREATHING DATA
+   ============================================================ */
+const BREATHING_DB = [
+  { id:'478', name:'4-7-8 Breathing', duration:'5 minutes',
+    for: ['anxious','overwhelmed','angry','irritable','tearful'],
+    instructions:'A powerful parasympathetic activator. Inhale for 4 counts, hold for 7, exhale slowly for 8. Dr Weil calls it a "natural tranquiliser for the nervous system."',
+    inhale:4, hold:7, exhale:8,
+    totalCycle: 19 },
+  { id:'box', name:'Box Breathing', duration:'4 minutes',
+    for: ['scattered','brainFog','overwhelmed','anxious'],
+    instructions:'Used by Navy SEALs to restore calm focus. Equal counts in, hold, out, hold. Perfect for grounding in the luteal phase.',
+    inhale:4, hold:4, exhale:4,
+    totalCycle: 16 },
+  { id:'belly', name:'Diaphragmatic Breathing', duration:'5–10 minutes',
+    for: ['depressed','lonely','withdrawn','sluggish','tearful'],
+    instructions:'Place one hand on your chest, one on your belly. Breathe so only the belly hand moves. Activates the vagus nerve and reduces cortisol.',
+    inhale:5, hold:0, exhale:7,
+    totalCycle: 12 },
+  { id:'alternate', name:'Nadi Shodhana (Alternate Nostril)', duration:'5 minutes',
+    for: ['emotional','sensitive','moodSwings','scattered'],
+    instructions:'Balances left and right brain hemispheres. Close right nostril, inhale left. Close left, exhale right. Alternate. Excellent for hormonal mood balance.',
+    inhale:4, hold:4, exhale:4,
+    totalCycle: 12 },
+  { id:'energising', name:'Kapalabhati (Energising Breath)', duration:'3 minutes',
+    for: ['sluggish','fatigue','lowEnergy','depressed','withdrawn'],
+    instructions:'Short, sharp exhalations with passive inhalation. Start with 1 breath/sec for 30 reps. Clears brain fog and stimulates the sympathetic nervous system for energy.',
+    inhale:1, hold:0, exhale:0.5,
+    totalCycle: 1.5 },
+];
+
+/* ============================================================
+   EDUCATION DATA
+   ============================================================ */
+const EDU_PHASES = [
+  { phase:'menstrual', icon:'🩸', name:'Menstrual Phase', days:'Days 1–5',
+    body:'Oestrogen and progesterone drop, signalling the uterine lining to shed. Energy is lowest. The body is doing significant work — rest and nourishment are key.',
+    hormones:['↓ Oestrogen','↓ Progesterone','↑ Prostaglandins'],
+    tips:['Rest generously','Eat iron-rich foods','Stay warm','Gentle yoga only'] },
+  { phase:'follicular', icon:'🌱', name:'Follicular Phase', days:'Days 6–13',
+    body:'FSH triggers follicle growth in the ovaries. Oestrogen rises steadily, improving mood, cognition, energy, and skin glow. The body naturally wants to build and create.',
+    hormones:['↑ Oestrogen','↑ FSH','↓ Progesterone'],
+    tips:['Try new projects','Exercise harder','Eat lighter, fresher foods','Socialise'] },
+  { phase:'ovulation', icon:'✨', name:'Ovulation Phase', days:'Days 14–16',
+    body:'LH surge triggers egg release. Oestrogen peaks, testosterone rises briefly. You\'re at your most energetic, social, and cognitively sharp. A short but powerful window.',
+    hormones:['Peak Oestrogen','LH surge','Brief Testosterone rise'],
+    tips:['High-intensity workouts','Complex cognitive work','Socialise freely','Eat antioxidants'] },
+  { phase:'luteal', icon:'🌙', name:'Luteal Phase', days:'Days 17–28',
+    body:'Progesterone rises significantly to prepare for possible implantation. If no fertilisation occurs, both hormones fall — triggering PMS in many. Self-care is paramount.',
+    hormones:['↑ Progesterone','↓ Oestrogen (late)','↑ Temperature'],
+    tips:['Slow down workouts','Prioritise sleep','Reduce caffeine','Magnesium-rich foods'] },
+];
+
+/* ============================================================
+   STATE
+   ============================================================ */
+const state = {
+  selectedSymptoms: new Set(),
+  selectedMoods: new Set(),
+  detectedPhase: null,
+  detectedCondition: null,
+  energyLevel: 0,
+  activeFilter: 'all',
+  lastPeriodDate: null,
+  cycleDay: null,
+  calendarPhase: null   // phase derived purely from calendar date
+};
+
+/* ============================================================
+   INIT
+   ============================================================ */
+document.addEventListener('DOMContentLoaded', () => {
+  // Set max date to today
+  document.getElementById('lastPeriodDate').max = new Date().toISOString().split('T')[0];
+
+  // Restore saved date
+  const saved = localStorage.getItem('bloomLastPeriod');
+  if (saved) {
+    document.getElementById('lastPeriodDate').value = saved;
+    onDateChange(saved, false);
+  }
+
+  renderChips('symptomsGrid', SYMPTOMS, 'symptom', state.selectedSymptoms);
+  renderChips('moodsGrid', MOODS, 'mood', state.selectedMoods);
+  renderEducation();
+  renderHistory();
+  initScrollAnimations();
+});
+
+/* ============================================================
+   DATE CHANGE HANDLER
+   ============================================================ */
+function onDateChange(dateStr, save = true) {
+  if (!dateStr) return;
+  if (save) localStorage.setItem('bloomLastPeriod', dateStr);
+
+  const today    = new Date(); today.setHours(0,0,0,0);
+  const period   = new Date(dateStr); period.setHours(0,0,0,0);
+  const diffMs   = today - period;
+  const cycleDay = Math.floor(diffMs / 86400000) + 1;
+
+  state.lastPeriodDate = dateStr;
+  state.cycleDay       = cycleDay;
+  state.calendarPhase  = phaseFromCycleDay(cycleDay);
+
+  const pillsEl = document.getElementById('cyclePills');
+  if (cycleDay < 1 || cycleDay > 35) {
+    pillsEl.innerHTML = `<span class="cycle-pill">⚠️ Check date — looks outside a typical cycle</span>`;
+    return;
+  }
+
+  const nextPeriodDay   = 28 - cycleDay;
+  const nextPeriodLabel = nextPeriodDay <= 0 ? 'Period likely due soon' :
+                          nextPeriodDay === 1 ? 'Period expected tomorrow' :
+                          `Period in ~${nextPeriodDay} days`;
+
+  pillsEl.innerHTML = `
+    <span class="cycle-pill">📅 Day ${cycleDay} of cycle</span>
+    <span class="cycle-pill ${state.calendarPhase === 'ovulation' ? 'green' : state.calendarPhase === 'luteal' ? 'purple' : ''}">
+      ${PHASE_ICONS[state.calendarPhase]} ${PHASE_LABELS[state.calendarPhase]} phase
+    </span>
+    <span class="cycle-pill honey">🔮 ${nextPeriodLabel}</span>
+  `;
+}
+
+/* Map cycle day → phase (28-day average cycle) */
+function phaseFromCycleDay(day) {
+  if (day >= 1  && day <= 5)  return 'menstrual';
+  if (day >= 6  && day <= 13) return 'follicular';
+  if (day >= 14 && day <= 16) return 'ovulation';
+  return 'luteal';
+}
+
+/* ============================================================
+   CHIP RENDERING
+   ============================================================ */
+function renderChips(containerId, data, type, selectedSet) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = '';
+  data.forEach(item => {
+    const chip = document.createElement('div');
+    chip.className = `chip chip-${type}${selectedSet.has(item.id) ? ' selected' : ''}`;
+    chip.innerHTML = item.label;
+    chip.addEventListener('click', () => {
+      if (selectedSet.has(item.id)) { selectedSet.delete(item.id); chip.classList.remove('selected'); }
+      else { selectedSet.add(item.id); chip.classList.add('selected'); }
+    });
+    container.appendChild(chip);
+  });
+}
+
+/* ============================================================
+   ANALYZE
+   ============================================================ */
+function analyze() {
+  const syms  = [...state.selectedSymptoms];
+  const moods = [...state.selectedMoods];
+  if (syms.length === 0 && moods.length === 0) {
+    alert('Please select at least one symptom or mood to analyse!');
+    return;
+  }
+
+  // Show loading
+  document.getElementById('loadingOverlay').classList.remove('hidden');
+
+  setTimeout(() => {
+    // Detect
+    state.detectedPhase     = detectPhase(syms, moods);
+    state.detectedCondition = detectCondition(syms, moods, state.detectedPhase);
+    state.energyLevel       = estimateEnergy(syms, moods, state.detectedPhase);
+
+    // Render all sections
+    renderResults();
+    renderFood(state.detectedPhase);
+    renderYoga(state.detectedPhase);
+    renderBreathing(moods);
+    renderReport();
+
+    // Show sections
+    ['results','nutrition','yoga','breathing','report'].forEach(id => {
+      document.getElementById(id).classList.remove('hidden');
+    });
+
+    // Hide loading
+    document.getElementById('loadingOverlay').classList.add('hidden');
+
+    // Guided scroll
+    setTimeout(() => navTo('results'), 100);
+    setTimeout(() => navTo('nutrition'), 1800);
+    setTimeout(() => navTo('yoga'), 3600);
+    setTimeout(() => navTo('breathing'), 5400);
+
+  }, 1600);
+}
+
+/* ============================================================
+   RESULT BANNER
+   ============================================================ */
+const PHASE_LABELS = { menstrual:'Menstrual', follicular:'Follicular', ovulation:'Ovulation', luteal:'Luteal' };
+const PHASE_ICONS  = { menstrual:'🩸', follicular:'🌱', ovulation:'✨', luteal:'🌙' };
+const PHASE_NEXT   = { menstrual:'follicular', follicular:'ovulation', ovulation:'luteal', luteal:'menstrual' };
+
+function renderResults() {
+  const p = state.detectedPhase;
+  const banner = document.getElementById('resultBanner');
+  banner.className = `glass result-banner phase-${p}`;
+
+  const cycleDayHtml = state.cycleDay ? `
+    <div class="result-stat">
+      <div class="stat-icon">📅</div>
+      <div class="stat-label">Cycle Day</div>
+      <div class="stat-value">Day ${state.cycleDay}</div>
+      <div style="font-size:0.78rem;color:var(--ink-muted);margin-top:4px">${state.calendarPhase ? PHASE_LABELS[state.calendarPhase]+' (calendar)' : ''}</div>
+    </div>` : '';
+
+  banner.innerHTML = `
+    <div class="result-stat">
+      <div class="stat-icon">${PHASE_ICONS[p]}</div>
+      <div class="stat-label">Cycle Phase</div>
+      <div class="stat-value">${PHASE_LABELS[p]}</div>
+    </div>
+    ${cycleDayHtml}
+    <div class="result-stat">
+      <div class="stat-icon">🩺</div>
+      <div class="stat-label">Primary Condition</div>
+      <div class="stat-value" style="font-size:1rem">${state.detectedCondition}</div>
+    </div>
+    <div class="result-stat">
+      <div class="stat-icon">⚡</div>
+      <div class="stat-label">Energy Level</div>
+      <div class="stat-value">${state.energyLevel}%</div>
+      <div class="energy-bar-wrap">
+        <div class="energy-bar" id="energyBar"></div>
+        <div class="energy-label">${energyLabel(state.energyLevel)}</div>
+      </div>
+    </div>
+    <div class="result-stat">
+      <div class="stat-icon">🔮</div>
+      <div class="stat-label">Coming Up Next</div>
+      <div class="stat-value">${PHASE_LABELS[PHASE_NEXT[p]]} Phase</div>
+    </div>
+  `;
+
+  setTimeout(() => {
+    const bar = document.getElementById('energyBar');
+    if (bar) bar.style.width = state.energyLevel + '%';
+  }, 300);
+
+  renderPredictiveInsights(p);
+}
+
+function energyLabel(e) {
+  if (e >= 80) return 'High — great day for challenges!';
+  if (e >= 60) return 'Moderate — steady and balanced';
+  if (e >= 40) return 'Low — gentle care recommended';
+  return 'Very low — rest is your priority';
+}
+
+function renderPredictiveInsights(phase) {
+  const card = document.getElementById('predictCard');
+  const insights = {
+    menstrual: [
+      '🔮 Your energy will begin rising in a few days as you enter the Follicular phase.',
+      '⚠️ Iron levels are lowest right now — prioritise iron-rich foods.',
+      '💡 This is a great time for journalling and inner reflection.'
+    ],
+    follicular: [
+      '🔮 Ovulation is approaching — your peak energy window is almost here!',
+      '💡 Start new projects, creative work, or social engagements.',
+      '⚠️ Oestrogen is rising — watch for heightened emotional sensitivity.'
+    ],
+    ovulation: [
+      '🔮 Luteal phase begins in a few days — prepare with magnesium-rich foods.',
+      '💡 This is your cognitive and social peak. Use it fully!',
+      '⚠️ If PMS typically starts for you soon, begin preventive breathwork now.'
+    ],
+    luteal: [
+      '🔮 Your period may be approaching. Prepare your self-care toolkit.',
+      '⚠️ Progesterone drop triggers PMS — keep magnesium and B6 intake high.',
+      '💡 Slow down workouts and prioritise 8+ hours of sleep now.'
+    ]
+  };
+
+  card.innerHTML = `
+    <h3>🔮 Predictive Insights</h3>
+    <div class="predict-list">
+      ${insights[phase].map(i => `
+        <div class="predict-item">
+          <div class="predict-dot"></div>
+          <p style="margin:0;font-size:0.9rem">${i}</p>
+        </div>`).join('')}
+    </div>`;
+}
+
+/* ============================================================
+   FOOD RENDERING
+   ============================================================ */
+function renderFood(phase) {
+  const foods = FOODS_DB[phase] || FOODS_DB.menstrual;
+  state.currentFoods = foods;
+  applyFoodFilter('all');
+}
+
+function filterFood(btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  applyFoodFilter(btn.dataset.filter);
+}
+
+function applyFoodFilter(filter) {
+  state.activeFilter = filter;
+  let foods = state.currentFoods || [];
+  if (filter === 'vegetarian') foods = foods.filter(f => f.vegetarian);
+  if (filter === 'vegan')      foods = foods.filter(f => f.vegan);
+
+  const grid = document.getElementById('foodGrid');
+  grid.innerHTML = foods.map(f => `
+    <div class="food-card">
+      ${f.vegan ? '<span class="food-badge">🌱 Vegan</span>' : f.vegetarian ? '<span class="food-badge">🥦 Veg</span>' : ''}
+      <div class="food-emoji">${f.emoji}</div>
+      <div class="food-name">${f.name}</div>
+      <div class="stars">${'★'.repeat(f.priority)}${'☆'.repeat(5-f.priority)}</div>
+      <div class="food-nutrients">${f.nutrients.map(n => `<span class="nutrient-tag">${n}</span>`).join('')}</div>
+      <div class="food-benefit">${f.benefit}</div>
+      <div class="food-why">💜 Why this helps YOU: ${f.why}</div>
+    </div>`).join('');
+}
+
+/* ============================================================
+   YOGA RENDERING
+   ============================================================ */
+function renderYoga(phase) {
+  const poses = YOGA_DB[phase] || YOGA_DB.menstrual;
+  const grid  = document.getElementById('yogaGrid');
+  grid.innerHTML = poses.map(pose => `
+    <div class="yoga-card">
+      <div class="yoga-visual">${pose.emoji}</div>
+      <div class="yoga-body">
+        <div class="yoga-name">${pose.name}</div>
+        <span class="difficulty diff-${pose.difficulty}">${pose.difficulty.toUpperCase()}</span>
+        <div class="yoga-steps">
+          <ol>${pose.steps.map(s => `<li>${s}</li>`).join('')}</ol>
+        </div>
+        <div class="yoga-benefit">✨ ${pose.benefit}</div>
+      </div>
+    </div>`).join('');
+}
+
+/* ============================================================
+   BREATHING RENDERING — symptom + mood aware
+   ============================================================ */
+function renderBreathing(moods) {
+  const syms = [...state.selectedSymptoms];
+  const allMoods = [...moods];
+
+  // Extended symptom → breathing technique mapping
+  const SYMPTOM_BREATH_MAP = {
+    cramps:         ['belly','478'],
+    bloating:       ['belly','box'],
+    fatigue:        ['energising','box'],
+    nausea:         ['belly','478'],
+    headache:       ['478','belly'],
+    insomnia:       ['478','belly'],
+    anxious:        ['478','box'],
+    brainFog:       ['energising','box'],
+    lowEnergy:      ['energising'],
+    palpitations:   ['belly','478'],
+    moodSwings:     ['alternate','box'],
+    shoulderTension:['belly'],
+    jawPain:        ['478'],
+    backpain:       ['belly'],
+    nightSweats:    ['belly','478'],
+  };
+
+  // Score each technique
+  const scored = BREATHING_DB.map(t => {
+    let score = 0;
+    // Mood matches
+    allMoods.forEach(m  => { if (t.for.includes(m)) score += 2; });
+    // Symptom matches via map
+    syms.forEach(s => {
+      if (SYMPTOM_BREATH_MAP[s] && SYMPTOM_BREATH_MAP[s].includes(t.id)) score += 3;
+    });
+    return { ...t, score };
+  }).sort((a,b) => b.score - a.score);
+
+  const matchLabel = score => {
+    if (score >= 5) return { cls:'high', label:'🎯 Best match for you' };
+    if (score >= 2) return { cls:'med',  label:'💜 Good match' };
+    return               { cls:'low',  label:'✨ General technique' };
+  };
+
+  const grid = document.getElementById('breathingGrid');
+  grid.innerHTML = scored.map(t => {
+    const totalSec = (t.inhale + (t.hold||0) + t.exhale) || 8;
+    const match = matchLabel(t.score);
+    return `
+    <div class="breath-card" id="breathCard_${t.id}">
+      <div class="breath-match-badge ${match.cls}">${match.label}</div>
+      <div class="breath-name">${t.name}</div>
+      <div class="breath-meta">⏱ ${t.duration}</div>
+      <div class="breath-circle-wrap">
+        <div class="breath-circle" id="circle_${t.id}" style="--breathe-duration:${totalSec}s">
+          <span class="breath-label" id="label_${t.id}">Tap to start</span>
+          <span class="breath-count" id="count_${t.id}"></span>
+        </div>
+      </div>
+      <div class="breath-instructions">${t.instructions}</div>
+      <div>
+        <strong style="font-size:0.82rem;color:var(--ink-muted)">Pattern: </strong>
+        <span style="font-size:0.88rem">
+          Inhale ${t.inhale}s${t.hold ? ` · Hold ${t.hold}s` : ''} · Exhale ${t.exhale}s
+        </span>
+      </div>
+      <div class="start-breath">
+        <button class="btn btn-outline btn-sm" onclick="startBreathing('${t.id}',${t.inhale},${t.hold||0},${t.exhale})">
+          🌬️ Start
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* Breathing animation controller */
+const breathTimers = {};
+function startBreathing(id, inhale, hold, exhale) {
+  if (breathTimers[id]) {
+    clearInterval(breathTimers[id]);
+    delete breathTimers[id];
+    const circle = document.getElementById(`circle_${id}`);
+    circle.classList.remove('animating');
+    document.getElementById(`label_${id}`).textContent = 'Tap to start';
+    document.getElementById(`count_${id}`).textContent = '';
+    return;
+  }
+
+  const circle = document.getElementById(`circle_${id}`);
+  const label  = document.getElementById(`label_${id}`);
+  const count  = document.getElementById(`count_${id}`);
+  circle.classList.add('animating');
+
+  const phases = [];
+  for (let i = inhale; i >= 1; i--) phases.push({phase:'Inhale',count:i});
+  for (let i = hold;   i >= 1; i--) phases.push({phase:'Hold',  count:i});
+  for (let i = exhale; i >= 1; i--) phases.push({phase:'Exhale',count:i});
+
+  let idx = 0;
+  const tick = () => {
+    const {phase:p, count:c} = phases[idx % phases.length];
+    label.textContent = p;
+    count.textContent = c;
+    idx++;
+  };
+  tick();
+  breathTimers[id] = setInterval(tick, 1000);
+}
+
+/* ============================================================
+   DAILY REPORT
+   ============================================================ */
+function renderReport() {
+  const syms  = [...state.selectedSymptoms];
+  const moods = [...state.selectedMoods];
+  const box   = document.getElementById('reportBox');
+  const date  = new Date().toLocaleDateString('en-GB',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+
+  box.innerHTML = `
+    <h3 style="margin-bottom:8px">📊 Your Daily Bloom Report</h3>
+    <p style="font-size:0.88rem;color:var(--ink-muted)">${date}</p>
+    <div class="report-grid">
+      <div class="report-item">
+        <div class="ri-label">Cycle Phase</div>
+        <div class="ri-value">${PHASE_ICONS[state.detectedPhase]} ${PHASE_LABELS[state.detectedPhase]}</div>
+      </div>
+      <div class="report-item">
+        <div class="ri-label">Condition</div>
+        <div class="ri-value" style="font-size:0.95rem">${state.detectedCondition}</div>
+      </div>
+      <div class="report-item">
+        <div class="ri-label">Energy Level</div>
+        <div class="ri-value">${state.energyLevel}% — ${energyLabel(state.energyLevel)}</div>
+      </div>
+      <div class="report-item" style="grid-column: 1/-1">
+        <div class="ri-label">Selected Symptoms</div>
+        <div class="report-chips">${syms.length ? syms.map(s=>`<span class="report-chip">${SYMPTOMS.find(x=>x.id===s)?.label||s}</span>`).join('') : '<span style="font-size:0.85rem;color:var(--ink-muted)">None selected</span>'}</div>
+      </div>
+      <div class="report-item" style="grid-column: 1/-1">
+        <div class="ri-label">Selected Moods</div>
+        <div class="report-chips">${moods.length ? moods.map(m=>`<span class="report-chip" style="background:var(--lavender-pale);color:var(--ink-soft)">${MOODS.find(x=>x.id===m)?.label||m}</span>`).join('') : '<span style="font-size:0.85rem;color:var(--ink-muted)">None selected</span>'}</div>
+      </div>
+    </div>`;
+}
+
+/* ============================================================
+   SAVE TO HISTORY
+   ============================================================ */
+function saveReport() {
+  const entry = {
+    date: new Date().toISOString(),
+    phase: state.detectedPhase,
+    condition: state.detectedCondition,
+    energy: state.energyLevel,
+    symptoms: [...state.selectedSymptoms],
+    moods: [...state.selectedMoods],
+    cycleDay: state.cycleDay,
+    lastPeriodDate: state.lastPeriodDate
+  };
+
+  const history = JSON.parse(localStorage.getItem('bloomHistory') || '[]');
+  history.unshift(entry);
+  localStorage.setItem('bloomHistory', JSON.stringify(history.slice(0,30)));
+
+  const toast = document.getElementById('saveToast');
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2500);
+
+  renderHistory();
+}
+
+/* ============================================================
+   HISTORY RENDERING
+   ============================================================ */
+function renderHistory() {
+  const history = JSON.parse(localStorage.getItem('bloomHistory') || '[]');
+  const grid    = document.getElementById('historyGrid');
+  const insights= document.getElementById('insightsBox');
+
+  if (!history.length) {
+    grid.innerHTML = `<div class="empty-history glass">No entries yet. Track your first day and save a report! 🌸</div>`;
+    insights.innerHTML = `<h3 style="margin-bottom:12px">🔍 Insights</h3><p>Insights will appear here once you have saved entries.</p>`;
+    return;
+  }
+
+  grid.innerHTML = history.map(e => {
+    const d = new Date(e.date).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+    return `
+    <div class="history-entry fade-in">
+      <div class="history-date">${d}</div>
+      <div class="history-phase">${PHASE_ICONS[e.phase]} ${PHASE_LABELS[e.phase]}</div>
+      ${e.cycleDay ? `<div style="font-size:0.82rem;color:var(--ink-muted)">Day ${e.cycleDay}</div>` : ''}
+      <div class="history-cond">${e.condition}</div>
+      <div style="font-size:0.82rem;color:var(--ink-muted)">⚡ ${e.energy}%</div>
+      <div class="history-chips">${e.symptoms.slice(0,3).map(s=>`<span class="report-chip" style="font-size:0.75rem">${SYMPTOMS.find(x=>x.id===s)?.label||s}</span>`).join('')}</div>
+    </div>`;
+  }).join('');
+
+  // Generate insights
+  const phaseCounts = {};
+  history.forEach(e => { phaseCounts[e.phase] = (phaseCounts[e.phase]||0)+1; });
+  const topPhase = Object.entries(phaseCounts).sort((a,b)=>b[1]-a[1])[0];
+
+  const avgEnergy = Math.round(history.reduce((a,e)=>a+e.energy,0)/history.length);
+
+  const symFreq = {};
+  history.forEach(e => e.symptoms.forEach(s => { symFreq[s]=(symFreq[s]||0)+1; }));
+  const topSym = Object.entries(symFreq).sort((a,b)=>b[1]-a[1])[0];
+  const topSymLabel = topSym ? SYMPTOMS.find(x=>x.id===topSym[0])?.label : null;
+
+  insights.innerHTML = `
+    <h3 style="margin-bottom:16px">🔍 Your Pattern Insights</h3>
+    <div class="insight-item">
+      <div class="insight-icon">📊</div>
+      <div class="insight-text">You've tracked <strong>${history.length} day${history.length>1?'s':''}</strong>. Keep it up — patterns emerge after 2+ weeks!</div>
+    </div>
+    ${topPhase ? `<div class="insight-item">
+      <div class="insight-icon">${PHASE_ICONS[topPhase[0]]}</div>
+      <div class="insight-text">You most often track during your <strong>${PHASE_LABELS[topPhase[0]]}</strong> phase (${topPhase[1]} time${topPhase[1]>1?'s':''}). This may be when you need the most support.</div>
+    </div>` : ''}
+    <div class="insight-item">
+      <div class="insight-icon">⚡</div>
+      <div class="insight-text">Your average energy level across all tracked days is <strong>${avgEnergy}%</strong>. ${avgEnergy<50?'Consider adding restorative yoga and breathwork to your routine.':'Great energy baseline — keep nourishing yourself!'}</div>
+    </div>
+    ${topSymLabel ? `<div class="insight-item">
+      <div class="insight-icon">🩺</div>
+      <div class="insight-text">Your most frequent symptom is <strong>${topSymLabel}</strong>. Consider discussing persistent symptoms with your healthcare provider.</div>
+    </div>` : ''}
+  `;
+}
+
+/* ============================================================
+   EDUCATION RENDERING
+   ============================================================ */
+function renderEducation() {
+  const grid = document.getElementById('eduGrid');
+  grid.innerHTML = EDU_PHASES.map(ph => `
+    <div class="edu-card ${ph.phase}">
+      <div class="edu-phase">${ph.icon}</div>
+      <div class="edu-name">${ph.name}</div>
+      <div class="edu-days">${ph.days}</div>
+      <div class="edu-body">${ph.body}</div>
+      <div class="edu-hormones">${ph.hormones.map(h=>`<span class="hormone-tag">${h}</span>`).join('')}</div>
+      <ul style="margin-top:14px;padding-left:18px;font-size:0.82rem;color:var(--ink-soft);display:flex;flex-direction:column;gap:4px">
+        ${ph.tips.map(t=>`<li>${t}</li>`).join('')}
+      </ul>
+    </div>`).join('');
+}
+
+/* ============================================================
+   CHATBOT (UI shell — wire your C++ backend here)
+   ============================================================ */
+let chatOpen = false;
+
+function toggleChat() {
+  chatOpen = !chatOpen;
+  document.getElementById('chatModal').classList.toggle('open', chatOpen);
+  if (chatOpen) document.getElementById('chatInput').focus();
+}
+
+// Simple rule-based fallback responses when no backend is connected
+const CHAT_RULES = [
+  { match:['cramp','pain','period pain'],  reply:'For cramps, try the 4-7-8 breathing above, or a Child\'s Pose yoga session 🧘 Magnesium-rich foods like dark chocolate and pumpkin seeds also help significantly.' },
+  { match:['bloat','water','retention'],   reply:'Bloating is common in the luteal and menstrual phases. Reduce salt, try herbal teas, and do Cat-Cow yoga. Dandelion tea and lemon water are natural diuretics 💧' },
+  { match:['mood','sad','depress','cry'],  reply:'Emotional sensitivity often peaks just before your period due to falling progesterone. Try diaphragmatic breathing and foods rich in tryptophan like chickpeas and walnuts 💜' },
+  { match:['anxious','anxiety','stress','overwhelm'], reply:'Box Breathing and 4-7-8 are clinically shown to activate your parasympathetic nervous system. Try 5 minutes before bed. Magnesium and chamomile tea help too 🌼' },
+  { match:['tired','fatigue','energy','exhaust'],  reply:'Low energy is classic in the menstrual and late luteal phase. Kapalabhati energising breath, iron-rich greens, and gentle sun salutations help restore vitality ⚡' },
+  { match:['food','eat','diet','nutrition'],        reply:'Your nutrition panel above is curated to your detected phase! Each food card explains exactly why it helps you right now 🥗' },
+  { match:['yoga','pose','exercise','stretch'],     reply:'Check your Yoga section above — poses are selected for your phase and energy level. Menstrual phase: rest poses. Ovulation: power poses! 🧘' },
+  { match:['breath','breathing','technique'],       reply:'Your top breathing matches are highlighted with a 🎯 badge above — those are the ones most aligned with your current symptoms and mood.' },
+  { match:['phase','cycle','period','ovulat'],      reply:`Based on your inputs, you're in the **${state.detectedPhase ? PHASE_LABELS[state.detectedPhase] : 'unknown'}** phase.${state.cycleDay ? ` You're on day ${state.cycleDay} of your cycle.` : ' Enter your last period date for more precision!'}` },
+  { match:['hello','hi','hey','hiya'],              reply:'Hello! 🌸 I\'m Bloom AI. Ask me about your symptoms, foods, yoga, breathing, or your cycle — I\'m here to help!' },
+];
+
+function getBotReply(msg) {
+  const lower = msg.toLowerCase();
+  for (const rule of CHAT_RULES) {
+    if (rule.match.some(k => lower.includes(k))) return rule.reply;
+  }
+  return 'Great question! 🌸 For the most personalised advice, make sure you\'ve selected your symptoms and moods above and clicked Analyse. I\'m also much smarter when connected to your backend — see the guide below the chat!';
+}
+
+// ── Backend URL — change this if you host the server elsewhere
+const BACKEND_URL = 'http://localhost:8080/chat';
+
+async function sendChat() {
+  const input = document.getElementById('chatInput');
+  const msgs  = document.getElementById('chatMessages');
+  const text  = input.value.trim();
+  if (!text) return;
+
+  // Render user bubble
+  msgs.innerHTML += `<div class="chat-bubble user">${text}</div>`;
+  input.value = '';
+  msgs.scrollTop = msgs.scrollHeight;
+
+  // Typing indicator
+  const typingId = 'typing_' + Date.now();
+  msgs.innerHTML += `<div class="chat-bubble bot" id="${typingId}" style="opacity:0.6">🌸 thinking…</div>`;
+  msgs.scrollTop = msgs.scrollHeight;
+
+  let reply = '';
+
+  try {
+    const res = await fetch(BACKEND_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message: text,
+        context: {
+          phase:     state.detectedPhase     || '',
+          condition: state.detectedCondition || '',
+          cycleDay:  state.cycleDay          || null,
+          energy:    state.energyLevel       || null,
+          symptoms:  [...state.selectedSymptoms].join(', '),
+          moods:     [...state.selectedMoods].join(', ')
+        }
+      })
+    });
+
+    if (!res.ok) throw new Error('Server returned ' + res.status);
+
+    const data = await res.json();
+    reply = data.reply || 'I got an empty response — please try again.';
+
+  } catch (err) {
+    console.warn('Backend not reachable, using fallback:', err.message);
+    await new Promise(r => setTimeout(r, 500));
+    reply = getBotReply(text);
+  }
+
+  const typingEl = document.getElementById(typingId);
+  if (typingEl) typingEl.outerHTML = `<div class="chat-bubble bot">${reply.replace(/\n/g,'<br>')}</div>`;
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+/* ============================================================
+   NAV UTILITY — handles hidden sections + active state
+   ============================================================ */
+// Sections that are hidden until Analyse is run
+const RESULTS_SECTIONS = ['results','nutrition','yoga','breathing','report'];
+
+function navTo(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+
+  // If section is hidden (not yet analysed), show it with a prompt
+  if (el.classList.contains('hidden')) {
+    // For results-dependent sections, show them but with an empty-state message
+    el.classList.remove('hidden');
+
+    // If no analysis has been run yet, inject a friendly prompt
+    if (RESULTS_SECTIONS.includes(id) && !state.detectedPhase) {
+      const placeholders = {
+        results:   { icon:'🔍', msg:'Run your analysis first — select symptoms &amp; moods above, then click Analyse.' },
+        nutrition: { icon:'🥗', msg:'Analyse your symptoms first to get personalised food recommendations.' },
+        yoga:      { icon:'🧘', msg:'Analyse your symptoms first to get yoga poses matched to your phase.' },
+        breathing: { icon:'🌬️', msg:'Analyse your symptoms first to get breathing exercises matched to your mood.' },
+        report:    { icon:'📊', msg:'Your daily report will appear here after you run an analysis.' },
+      };
+      const p = placeholders[id];
+      if (p) {
+        // Only inject placeholder if the section content area is empty
+        const contentEl = el.querySelector('#resultBanner, #foodGrid, #yogaGrid, #breathingGrid, #reportBox');
+        if (contentEl && contentEl.innerHTML.trim() === '') {
+          contentEl.innerHTML = `
+            <div style="text-align:center;padding:60px 24px;color:var(--ink-muted)">
+              <div style="font-size:3rem;margin-bottom:16px">${p.icon}</div>
+              <p style="font-size:1rem;max-width:400px;margin:0 auto">${p.msg}</p>
+              <button class="btn btn-primary" style="margin-top:24px" onclick="navTo('tracker')">
+                🌸 Go to Tracker
+              </button>
+            </div>`;
+        }
+      }
+    }
+  }
+
+  // Update active nav link highlight
+  document.querySelectorAll('.nav-link').forEach(btn => btn.classList.remove('active'));
+  const activeBtn = [...document.querySelectorAll('.nav-link')]
+    .find(b => b.getAttribute('onclick') === `navTo('${id}')`);
+  if (activeBtn) activeBtn.classList.add('active');
+
+  // Smooth scroll
+  el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/* ============================================================
+   SCROLL ANIMATIONS + ACTIVE NAV ON SCROLL
+   ============================================================ */
+function initScrollAnimations() {
+  // Fade-in observer
+  const fadeObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) e.target.classList.add('visible');
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.fade-in').forEach(el => fadeObserver.observe(el));
+
+  // Active nav highlight observer — watches each section
+  const navSectionIds = ['tracker','results','nutrition','yoga','breathing','report','history','education'];
+  const navObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const id = e.target.id;
+        document.querySelectorAll('.nav-link').forEach(btn => btn.classList.remove('active'));
+        const activeBtn = [...document.querySelectorAll('.nav-link')]
+          .find(b => b.getAttribute('onclick') === `navTo('${id}')`);
+        if (activeBtn) activeBtn.classList.add('active');
+      }
+    });
+  }, { threshold: 0.35 });
+
+  navSectionIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) navObserver.observe(el);
+  });
+}
+</script>
+</body>
+</html>
