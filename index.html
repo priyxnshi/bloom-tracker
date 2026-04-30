@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Bloom – Smart Menstrual Health Companion</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
 /* ============================================================
    ROOT VARIABLES & RESET
@@ -34,6 +35,164 @@
   --radius-l:    32px;
   --transition:  0.3s cubic-bezier(0.34,1.56,0.64,1);
 }
+
+/* ============================================================
+   DARK MODE VARIABLES
+   ============================================================ */
+[data-theme="dark"] {
+  --rose:         #c9607e;
+  --rose-deep:    #e07fa0;
+  --rose-pale:    #3a1a25;
+  --lavender:     #9b85d4;
+  --lavender-pale:#1e1a2e;
+  --sage:         #7aaa72;
+  --sage-pale:    #1a2e1a;
+  --honey:        #d4ac3a;
+  --honey-pale:   #2a2210;
+  --sky:          #5a9ab5;
+  --sky-pale:     #102030;
+  --ink:          #f0e6f6;
+  --ink-soft:     #c9b8d8;
+  --ink-muted:    #8a7a9a;
+  --white:        #1a1020;
+  --card-bg:      rgba(30,18,40,0.92);
+  --shadow-s:     0 2px 12px rgba(0,0,0,0.35);
+  --shadow-m:     0 8px 32px rgba(0,0,0,0.45);
+  --shadow-l:     0 20px 60px rgba(0,0,0,0.55);
+}
+
+[data-theme="dark"] body {
+  background: linear-gradient(135deg, #1a0e1f 0%, #16101f 35%, #0e1520 70%, #0e1a0e 100%);
+}
+
+[data-theme="dark"] .glass {
+  background: rgba(30,18,42,0.88) !important;
+  border-color: rgba(255,255,255,0.07) !important;
+}
+
+[data-theme="dark"] nav {
+  background: rgba(20,10,30,0.92) !important;
+  border-bottom-color: rgba(255,255,255,0.06) !important;
+}
+
+[data-theme="dark"] .hero-section {
+  background: linear-gradient(135deg, rgba(60,20,40,0.4), rgba(30,20,60,0.4)) !important;
+}
+
+[data-theme="dark"] .auth-box {
+  background: rgba(28,16,38,0.98) !important;
+  border-color: rgba(255,255,255,0.08) !important;
+}
+
+[data-theme="dark"] .auth-field,
+[data-theme="dark"] .auth-select {
+  background: rgba(40,24,54,0.8) !important;
+  border-color: rgba(224,127,160,0.2) !important;
+  color: var(--ink) !important;
+}
+
+[data-theme="dark"] .auth-field:focus {
+  background: rgba(50,30,64,0.95) !important;
+}
+
+[data-theme="dark"] .form-input,
+[data-theme="dark"] .form-select {
+  background: rgba(40,24,54,0.7) !important;
+  border-color: rgba(224,127,160,0.2) !important;
+  color: var(--ink) !important;
+}
+
+[data-theme="dark"] .chip {
+  background: rgba(40,24,54,0.8) !important;
+  border-color: rgba(224,127,160,0.15) !important;
+  color: var(--ink-soft) !important;
+}
+
+[data-theme="dark"] .chip.selected {
+  background: rgba(224,127,160,0.25) !important;
+  border-color: var(--rose-deep) !important;
+  color: var(--rose) !important;
+}
+
+[data-theme="dark"] .nav-link {
+  color: var(--ink-muted) !important;
+}
+[data-theme="dark"] .nav-link:hover,
+[data-theme="dark"] .nav-link.active {
+  color: var(--rose) !important;
+  background: rgba(224,127,160,0.12) !important;
+}
+
+[data-theme="dark"] .atab {
+  background: rgba(30,18,42,0.7) !important;
+  border-color: rgba(224,127,160,0.15) !important;
+  color: var(--ink-muted) !important;
+}
+[data-theme="dark"] .atab.active {
+  background: rgba(224,127,160,0.18) !important;
+  border-color: var(--rose-deep) !important;
+  color: var(--rose) !important;
+}
+
+[data-theme="dark"] .heatmap-day {
+  background: rgba(255,255,255,0.04) !important;
+  color: var(--ink-muted) !important;
+}
+
+[data-theme="dark"] .badge-card {
+  background: rgba(30,18,42,0.9) !important;
+  border-color: rgba(255,255,255,0.07) !important;
+}
+
+[data-theme="dark"] .planner-card-menstrual  { background: linear-gradient(135deg,#2a1018,#3a1525) !important; }
+[data-theme="dark"] .planner-card-follicular { background: linear-gradient(135deg,#221e08,#2e280a) !important; }
+[data-theme="dark"] .planner-card-ovulation  { background: linear-gradient(135deg,#0e1e0e,#162816) !important; }
+[data-theme="dark"] .planner-card-luteal     { background: linear-gradient(135deg,#180e2a,#221535) !important; }
+
+[data-theme="dark"] .section-tag {
+  background: rgba(224,127,160,0.15) !important;
+  color: var(--rose) !important;
+}
+
+[data-theme="dark"] .result-card,
+[data-theme="dark"] .food-card,
+[data-theme="dark"] .yoga-card,
+[data-theme="dark"] .breathing-card,
+[data-theme="dark"] .edu-card {
+  background: rgba(30,18,42,0.85) !important;
+  border-color: rgba(255,255,255,0.06) !important;
+}
+
+[data-theme="dark"] input[type="range"] {
+  accent-color: var(--rose-deep);
+}
+
+[data-theme="dark"] .auth-guest {
+  background: rgba(40,24,54,0.7) !important;
+  border-color: rgba(224,127,160,0.2) !important;
+  color: var(--ink-soft) !important;
+}
+
+[data-theme="dark"] .pstat {
+  background: rgba(255,255,255,0.05) !important;
+}
+
+/* Dark mode toggle button */
+.dark-toggle {
+  width: 44px; height: 24px;
+  border-radius: 50px; border: none; cursor: pointer;
+  background: rgba(224,127,160,0.25);
+  position: relative; transition: background 0.3s; flex-shrink: 0;
+  display: flex; align-items: center; padding: 3px;
+}
+.dark-toggle-thumb {
+  width: 18px; height: 18px; border-radius: 50%;
+  background: var(--rose-deep); transition: transform 0.3s;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; line-height: 1;
+}
+[data-theme="dark"] .dark-toggle { background: rgba(201,184,232,0.3); }
+[data-theme="dark"] .dark-toggle-thumb { transform: translateX(20px); background: var(--lavender); }
 
 *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
@@ -618,6 +777,213 @@ footer p { margin: 4px 0; }
 }
 
 /* ============================================================
+   AUTH MODAL
+   ============================================================ */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 900;
+  background: rgba(45,27,53,0.45); backdrop-filter: blur(12px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+}
+.auth-box {
+  background: rgba(255,255,255,0.97);
+  border-radius: var(--radius-l); padding: 48px 44px;
+  max-width: 440px; width: 100%;
+  box-shadow: var(--shadow-l);
+  border: 1px solid rgba(255,255,255,0.9);
+  animation: slideUp 0.4s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes slideUp { from { opacity:0; transform:translateY(40px) scale(0.95); } to { opacity:1; transform:none; } }
+.auth-logo { text-align:center; font-family:'Playfair Display',serif; font-size:1.8rem; color:var(--rose-deep); margin-bottom:6px; }
+.auth-sub  { text-align:center; font-size:0.9rem; color:var(--ink-muted); margin-bottom:28px; }
+.auth-tabs { display:flex; gap:8px; margin-bottom:24px; background:var(--rose-pale); border-radius:50px; padding:4px; }
+.auth-tab  { flex:1; padding:9px; border:none; border-radius:50px; font-family:'DM Sans',sans-serif;
+             font-size:0.9rem; font-weight:600; cursor:pointer; transition:0.2s;
+             background:transparent; color:var(--ink-muted); }
+.auth-tab.active { background:white; color:var(--rose-deep); box-shadow:var(--shadow-s); }
+.auth-field {
+  width:100%; padding:13px 18px; border-radius:14px; margin-bottom:14px;
+  border:1.5px solid rgba(224,127,160,0.3); font-family:'DM Sans',sans-serif;
+  font-size:0.95rem; color:var(--ink); background:rgba(253,232,239,0.3);
+  outline:none; transition:0.2s; box-sizing:border-box;
+}
+.auth-field:focus { border-color:var(--rose-deep); background:white; box-shadow:0 0 0 3px rgba(224,127,160,0.12); }
+.auth-field::placeholder { color:var(--ink-muted); }
+.auth-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.auth-label { font-size:0.78rem; font-weight:600; color:var(--ink-muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:5px; display:block; }
+.auth-submit { width:100%; padding:14px; border:none; border-radius:50px; cursor:pointer; margin-top:6px;
+  font-family:'DM Sans',sans-serif; font-size:1rem; font-weight:700;
+  background:linear-gradient(135deg,var(--rose-deep),var(--lavender)); color:white;
+  box-shadow:0 4px 20px rgba(224,127,160,0.4); transition:var(--transition); }
+.auth-submit:hover { transform:translateY(-2px); box-shadow:0 8px 28px rgba(224,127,160,0.5); }
+.auth-guest { width:100%; padding:11px; border:1.5px solid rgba(224,127,160,0.3); border-radius:50px; cursor:pointer; margin-top:10px;
+  font-family:'DM Sans',sans-serif; font-size:0.9rem; font-weight:600; color:var(--ink-soft);
+  background:rgba(255,255,255,0.7); transition:0.2s; }
+.auth-guest:hover { background:var(--rose-pale); }
+.auth-err { font-size:0.83rem; color:#e05a5a; text-align:center; margin-top:-8px; margin-bottom:8px; min-height:18px; }
+.auth-select {
+  width:100%; padding:13px 18px; border-radius:14px; margin-bottom:14px;
+  border:1.5px solid rgba(224,127,160,0.3); font-family:'DM Sans',sans-serif;
+  font-size:0.95rem; color:var(--ink); background:rgba(253,232,239,0.3);
+  outline:none; appearance:none; cursor:pointer; box-sizing:border-box;
+}
+
+/* ============================================================
+   NAV USER AREA
+   ============================================================ */
+.nav-user {
+  display:flex; align-items:center; gap:10px; flex-shrink:0;
+}
+.nav-avatar {
+  width:36px; height:36px; border-radius:50%;
+  background:linear-gradient(135deg,var(--rose-deep),var(--lavender));
+  display:flex; align-items:center; justify-content:center;
+  color:white; font-size:1rem; font-weight:700; cursor:pointer;
+  border:none; transition:0.2s; flex-shrink:0;
+}
+.nav-avatar:hover { transform:scale(1.08); }
+.nav-username { font-size:0.85rem; font-weight:600; color:var(--ink-soft); }
+.nav-logout { padding:6px 14px; border-radius:50px; font-size:0.8rem; font-weight:600;
+  color:var(--ink-muted); border:1px solid rgba(155,138,165,0.3); background:none; cursor:pointer; transition:0.2s; }
+.nav-logout:hover { background:var(--rose-pale); color:var(--rose-deep); }
+
+/* ============================================================
+   PROFILE SECTION
+   ============================================================ */
+#profile { scroll-margin-top:80px; }
+.profile-grid { display:grid; grid-template-columns:1fr 2fr; gap:28px; align-items:start; }
+@media(max-width:768px){ .profile-grid { grid-template-columns:1fr; } }
+.profile-card { padding:36px; text-align:center; }
+.profile-avatar-big {
+  width:90px; height:90px; border-radius:50%; margin:0 auto 16px;
+  background:linear-gradient(135deg,var(--rose-deep),var(--lavender));
+  display:flex; align-items:center; justify-content:center;
+  font-size:2.4rem; color:white; font-weight:700;
+  box-shadow:0 8px 28px rgba(224,127,160,0.35);
+}
+.profile-name { font-family:'Playfair Display',serif; font-size:1.5rem; margin-bottom:4px; }
+.profile-since { font-size:0.82rem; color:var(--ink-muted); }
+.profile-stats { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-top:24px; }
+.pstat { background:rgba(255,255,255,0.7); border-radius:var(--radius-s); padding:14px 10px; text-align:center; }
+.pstat-val { font-family:'Playfair Display',serif; font-size:1.5rem; color:var(--rose-deep); }
+.pstat-lbl { font-size:0.72rem; text-transform:uppercase; letter-spacing:0.07em; color:var(--ink-muted); margin-top:2px; }
+
+.profile-form-card { padding:36px; }
+.form-section-title { font-size:0.78rem; font-weight:700; color:var(--ink-muted); text-transform:uppercase; letter-spacing:0.1em; margin:20px 0 12px; }
+.form-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+@media(max-width:500px){ .form-row { grid-template-columns:1fr; } }
+.form-group { margin-bottom:4px; }
+.form-label { font-size:0.8rem; font-weight:600; color:var(--ink-muted); display:block; margin-bottom:5px; }
+.form-input {
+  width:100%; padding:11px 16px; border-radius:12px;
+  border:1.5px solid rgba(224,127,160,0.25); font-family:'DM Sans',sans-serif;
+  font-size:0.9rem; color:var(--ink); background:rgba(253,232,239,0.25);
+  outline:none; transition:0.2s; box-sizing:border-box;
+}
+.form-input:focus { border-color:var(--rose-deep); background:white; }
+.form-select {
+  width:100%; padding:11px 16px; border-radius:12px;
+  border:1.5px solid rgba(224,127,160,0.25); font-family:'DM Sans',sans-serif;
+  font-size:0.9rem; color:var(--ink); background:rgba(253,232,239,0.25);
+  outline:none; appearance:none; cursor:pointer; box-sizing:border-box;
+}
+.save-profile-btn { margin-top:20px; }
+.profile-saved-toast { display:inline-block; background:var(--sage); color:white; padding:7px 18px; border-radius:50px; font-size:0.85rem; margin-left:12px; opacity:0; transition:0.3s; }
+.profile-saved-toast.show { opacity:1; }
+
+/* ============================================================
+   STREAK / GAMIFICATION SECTION
+   ============================================================ */
+#streaks { scroll-margin-top:80px; }
+.streak-hero {
+  padding:44px; text-align:center; margin-bottom:28px;
+  background:linear-gradient(135deg, rgba(244,167,185,0.2), rgba(201,184,232,0.2));
+}
+.streak-flame { font-size:4rem; margin-bottom:8px; animation:flamePulse 2s ease-in-out infinite; }
+@keyframes flamePulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.12)} }
+.streak-number { font-family:'Playfair Display',serif; font-size:4.5rem; color:var(--rose-deep); line-height:1; }
+.streak-label  { font-size:1rem; color:var(--ink-muted); margin-bottom:20px; }
+.streak-bar-wrap { max-width:360px; margin:0 auto; }
+.streak-bar-track { height:12px; border-radius:50px; background:rgba(224,127,160,0.15); overflow:hidden; }
+.streak-bar-fill  { height:100%; border-radius:50px; background:linear-gradient(90deg,var(--rose),var(--lavender)); transition:width 1.2s ease; }
+.streak-bar-label { font-size:0.78rem; color:var(--ink-muted); margin-top:5px; }
+
+.gamif-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(200px,1fr)); gap:18px; margin-bottom:28px; }
+.badge-card {
+  padding:28px 20px; text-align:center; border-radius:var(--radius-m);
+  background:var(--card-bg); border:1px solid rgba(255,255,255,0.8);
+  box-shadow:var(--shadow-s); transition:var(--transition); cursor:default;
+}
+.badge-card:hover { transform:translateY(-3px); box-shadow:var(--shadow-m); }
+.badge-card.locked { opacity:0.45; filter:grayscale(0.7); }
+.badge-icon  { font-size:2.8rem; margin-bottom:10px; }
+.badge-name  { font-family:'Playfair Display',serif; font-size:1rem; margin-bottom:4px; }
+.badge-desc  { font-size:0.78rem; color:var(--ink-muted); }
+.badge-unlocked-tag { font-size:0.7rem; font-weight:700; padding:2px 10px; border-radius:50px; background:var(--sage-pale); color:var(--sage); display:inline-block; margin-top:6px; }
+
+.points-bar-card { padding:28px 36px; margin-bottom:28px; }
+.points-row { display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
+.points-big { font-family:'Playfair Display',serif; font-size:2.5rem; color:var(--rose-deep); }
+.points-lbl { font-size:0.85rem; color:var(--ink-muted); }
+.level-pill { padding:8px 20px; border-radius:50px; font-size:0.88rem; font-weight:700;
+  background:linear-gradient(135deg,var(--honey-pale),var(--honey)); color:var(--ink); }
+.xp-track { flex:1; min-width:180px; }
+.xp-bar-track { height:10px; border-radius:50px; background:rgba(224,127,160,0.15); overflow:hidden; margin-bottom:4px; }
+.xp-bar-fill  { height:100%; border-radius:50px; background:linear-gradient(90deg,var(--honey),var(--rose)); transition:width 1s ease; }
+.xp-label { font-size:0.75rem; color:var(--ink-muted); }
+
+/* ============================================================
+   ANALYTICS SECTION
+   ============================================================ */
+#analytics { scroll-margin-top:80px; }
+.analytics-tabs { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:28px; }
+.atab { padding:9px 22px; border-radius:50px; border:1.5px solid rgba(224,127,160,0.3);
+  background:rgba(255,255,255,0.7); cursor:pointer; font-size:0.88rem; font-weight:600;
+  color:var(--ink-soft); transition:0.2s; font-family:'DM Sans',sans-serif; }
+.atab.active { background:var(--rose-pale); border-color:var(--rose-deep); color:var(--rose-deep); }
+.atab-panel { display:none; }
+.atab-panel.active { display:block; }
+.chart-card { padding:32px; margin-bottom:24px; }
+.chart-card h3 { margin-bottom:20px; display:flex; align-items:center; gap:8px; font-size:1.1rem; }
+.chart-wrap { position:relative; width:100%; }
+.chart-wrap canvas { width:100% !important; }
+
+.no-data-msg { text-align:center; padding:48px 24px; color:var(--ink-muted); }
+.no-data-msg .nd-icon { font-size:2.8rem; margin-bottom:12px; }
+.no-data-msg p { font-size:0.95rem; max-width:340px; margin:0 auto; }
+
+/* Calendar heatmap */
+.heatmap-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; }
+.heatmap-day {
+  aspect-ratio:1; border-radius:5px; display:flex; align-items:center; justify-content:center;
+  font-size:0.65rem; font-weight:600; color:var(--ink-muted); cursor:default;
+  background:rgba(224,127,160,0.07); transition:0.15s; position:relative;
+}
+.heatmap-day:hover { transform:scale(1.15); z-index:2; }
+.heatmap-day.has-entry { color:white; cursor:pointer; }
+.heatmap-day.phase-menstrual  { background:rgba(244,112,150,0.75); }
+.heatmap-day.phase-follicular { background:rgba(245,216,124,0.75); }
+.heatmap-day.phase-ovulation  { background:rgba(140,197,160,0.75); }
+.heatmap-day.phase-luteal     { background:rgba(180,158,228,0.75); }
+.heatmap-legend { display:flex; gap:14px; flex-wrap:wrap; margin-top:14px; }
+.hm-legend-item { display:flex; align-items:center; gap:6px; font-size:0.78rem; color:var(--ink-muted); }
+.hm-dot { width:12px; height:12px; border-radius:3px; }
+
+/* Productivity planner */
+.planner-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:16px; }
+.planner-phase-card {
+  padding:24px 20px; border-radius:var(--radius-m);
+  border:1px solid rgba(255,255,255,0.8); box-shadow:var(--shadow-s);
+}
+.planner-phase-card h4 { font-family:'Playfair Display',serif; font-size:1rem; margin-bottom:8px; }
+.planner-phase-card p { font-size:0.84rem; }
+.planner-phase-card ul { font-size:0.82rem; color:var(--ink-soft); padding-left:16px; margin-top:8px; line-height:1.8; }
+.planner-card-menstrual  { background:linear-gradient(135deg,#FDE8EF,#FDD0E0); }
+.planner-card-follicular { background:linear-gradient(135deg,#FEF9E7,#FDF1C0); }
+.planner-card-ovulation  { background:linear-gradient(135deg,#EAF4E8,#D5EBD1); }
+.planner-card-luteal     { background:linear-gradient(135deg,#F0EBFB,#E3D9F7); }
+
+/* ============================================================
    LOADING SPINNER
    ============================================================ */
 .spinner-overlay {
@@ -634,6 +1000,14 @@ footer p { margin: 4px 0; }
 }
 .spinner-text { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--ink-soft); }
 </style>
+<script>
+  // Runs before paint — prevents flash of wrong theme
+  (function(){
+    const t = localStorage.getItem('bloomTheme') ||
+      (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    document.documentElement.setAttribute('data-theme', t);
+  })();
+</script>
 </head>
 <body>
 
@@ -650,8 +1024,17 @@ footer p { margin: 4px 0; }
       <button class="nav-link" onclick="navTo('nutrition')">Nutrition</button>
       <button class="nav-link" onclick="navTo('yoga')">Yoga</button>
       <button class="nav-link" onclick="navTo('breathing')">Breathe</button>
+      <button class="nav-link" onclick="navTo('analytics')">Analytics</button>
+      <button class="nav-link" onclick="navTo('streaks')">Streaks 🔥</button>
       <button class="nav-link" onclick="navTo('history')">History</button>
       <button class="nav-link" onclick="navTo('education')">Learn</button>
+      <button class="nav-link hidden" onclick="navTo('profile')">Profile</button>
+    </div>
+    <div class="nav-user" id="navUser">
+      <button class="dark-toggle" onclick="toggleDarkMode()" title="Toggle dark mode" aria-label="Toggle dark mode">
+        <div class="dark-toggle-thumb" id="darkThumb">☀️</div>
+      </button>
+      <button class="btn btn-primary btn-sm" onclick="openAuth()">Sign In</button>
     </div>
   </div>
 </nav>
@@ -668,7 +1051,7 @@ footer p { margin: 4px 0; }
         <p class="hero-subtitle">Bloom listens to your symptoms and moods, detects your cycle phase, and guides you through personalised nutrition, yoga, and breathing routines.</p>
         <div class="hero-cta">
           <button class="btn btn-primary" onclick="navTo('tracker')">🌸 Start Tracking</button>
-          <button class="btn btn-outline" onclick="navTo('education')">Learn about your cycle</button>
+          <button class="btn btn-outline" onclick="openAuth()">✨ Create Account</button>
         </div>
       </div>
       <div class="hero-visual">
@@ -832,6 +1215,327 @@ footer p { margin: 4px 0; }
       <p>Learn about the four phases, key hormones, and what your body goes through each month.</p>
     </div>
     <div class="edu-grid" id="eduGrid"></div>
+  </div>
+</section>
+
+<!-- ============================================================
+     AUTH MODAL
+     ============================================================ -->
+<div class="modal-overlay hidden" id="authModal">
+  <div class="auth-box">
+    <div class="auth-logo">🌸 Bloom</div>
+    <div class="auth-sub">Your personal health companion</div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tabLogin" onclick="switchAuthTab('login')">Sign In</button>
+      <button class="auth-tab" id="tabSignup" onclick="switchAuthTab('signup')">Create Account</button>
+    </div>
+    <div id="authErr" class="auth-err"></div>
+
+    <!-- Login fields -->
+    <div id="loginFields">
+      <label class="auth-label">Username</label>
+      <input class="auth-field" id="loginUser" placeholder="Enter your username" autocomplete="username"/>
+      <label class="auth-label">Password</label>
+      <input class="auth-field" id="loginPass" type="password" placeholder="Enter password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"/>
+    </div>
+
+    <!-- Signup fields -->
+    <div id="signupFields" class="hidden">
+      <label class="auth-label">Username</label>
+      <input class="auth-field" id="signupUser" placeholder="Choose a username" autocomplete="username"/>
+      <label class="auth-label">Password</label>
+      <input class="auth-field" id="signupPass" type="password" placeholder="Create a password" autocomplete="new-password"/>
+      <div class="auth-row">
+        <div>
+          <label class="auth-label">Age</label>
+          <input class="auth-field" id="signupAge" type="number" placeholder="e.g. 24" min="12" max="60"/>
+        </div>
+        <div>
+          <label class="auth-label">Cycle length (days)</label>
+          <input class="auth-field" id="signupCycle" type="number" placeholder="28" min="20" max="45" value="28"/>
+        </div>
+      </div>
+      <label class="auth-label">Diet type</label>
+      <select class="auth-select" id="signupDiet">
+        <option value="all">No preference</option>
+        <option value="vegetarian">Vegetarian</option>
+        <option value="vegan">Vegan</option>
+        <option value="non-veg">Non-vegetarian</option>
+      </select>
+      <label class="auth-label">Activity level</label>
+      <select class="auth-select" id="signupActivity">
+        <option value="sedentary">Sedentary (desk job)</option>
+        <option value="light" selected>Lightly active</option>
+        <option value="moderate">Moderately active</option>
+        <option value="active">Very active</option>
+      </select>
+    </div>
+
+    <button class="auth-submit" id="authSubmitBtn" onclick="doAuth()">Sign In</button>
+    <button class="auth-guest" onclick="doGuest()">👤 Continue as Guest (no data saved)</button>
+  </div>
+</div>
+
+<!-- ============================================================
+     PROFILE SECTION
+     ============================================================ -->
+<section id="profile" class="section hidden">
+  <div class="container">
+    <div class="section-header fade-in">
+      <div class="section-tag">Your Account</div>
+      <h2>👤 Profile &amp; Personalisation</h2>
+      <p>Update your details to get more personalised recommendations.</p>
+    </div>
+    <div class="profile-grid">
+      <div class="glass profile-card fade-in">
+        <div class="profile-avatar-big" id="profileAvatarBig">🌸</div>
+        <div class="profile-name" id="profileDisplayName">Guest</div>
+        <div class="profile-since" id="profileSince">Bloom Member</div>
+        <div class="profile-stats">
+          <div class="pstat"><div class="pstat-val" id="pstatDays">0</div><div class="pstat-lbl">Days logged</div></div>
+          <div class="pstat"><div class="pstat-val" id="pstatStreak">0</div><div class="pstat-lbl">Streak 🔥</div></div>
+          <div class="pstat"><div class="pstat-val" id="pstatPoints">0</div><div class="pstat-lbl">Points ✨</div></div>
+        </div>
+      </div>
+      <div class="glass profile-form-card fade-in">
+        <h3 style="margin-bottom:4px">Personal Details</h3>
+        <div class="form-section-title">Basic Info</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Age</label>
+            <input class="form-input" id="profAge" type="number" placeholder="24" min="12" max="60"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Cycle length (days)</label>
+            <input class="form-input" id="profCycle" type="number" placeholder="28" min="20" max="45"/>
+          </div>
+        </div>
+        <div class="form-section-title">Lifestyle</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Diet type</label>
+            <select class="form-select" id="profDiet">
+              <option value="all">No preference</option>
+              <option value="vegetarian">Vegetarian</option>
+              <option value="vegan">Vegan</option>
+              <option value="non-veg">Non-vegetarian</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Activity level</label>
+            <select class="form-select" id="profActivity">
+              <option value="sedentary">Sedentary</option>
+              <option value="light">Lightly active</option>
+              <option value="moderate">Moderately active</option>
+              <option value="active">Very active</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Avg sleep (hours)</label>
+            <input class="form-input" id="profSleep" type="number" placeholder="7" min="3" max="12" step="0.5"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Goal</label>
+            <select class="form-select" id="profGoal">
+              <option value="track">Track symptoms</option>
+              <option value="pms">Manage PMS</option>
+              <option value="fertility">Fertility awareness</option>
+              <option value="wellness">General wellness</option>
+            </select>
+          </div>
+        </div>
+        <div class="save-profile-btn">
+          <button class="btn btn-primary" onclick="saveProfile()">💾 Save Changes</button>
+          <span class="profile-saved-toast" id="profSavedToast">✅ Saved!</span>
+        </div>
+        <div style="margin-top:24px;padding-top:20px;border-top:1px solid rgba(224,127,160,0.15)">
+          <button class="auth-guest" onclick="doLogout()" style="width:auto;padding:9px 22px">🚪 Sign Out</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     STREAKS & GAMIFICATION
+     ============================================================ -->
+<section id="streaks" class="section">
+  <div class="container">
+    <div class="section-header fade-in">
+      <div class="section-tag">Gamification</div>
+      <h2>🔥 Streaks &amp; Rewards</h2>
+      <p>Build healthy habits one day at a time. Log daily to earn rewards and unlock badges.</p>
+    </div>
+
+    <div class="glass streak-hero fade-in">
+      <div class="streak-flame">🔥</div>
+      <div class="streak-number" id="streakCount">0</div>
+      <div class="streak-label">day streak</div>
+      <div class="streak-bar-wrap">
+        <div class="streak-bar-track"><div class="streak-bar-fill" id="streakBarFill" style="width:0%"></div></div>
+        <div class="streak-bar-label" id="streakBarLabel">Log today to start your streak!</div>
+      </div>
+    </div>
+
+    <div class="glass points-bar-card fade-in">
+      <div class="points-row">
+        <div>
+          <div class="points-big" id="totalPoints">0</div>
+          <div class="points-lbl">Bloom Points ✨</div>
+        </div>
+        <div class="level-pill" id="levelPill">🌱 Seedling</div>
+        <div class="xp-track">
+          <div class="xp-bar-track"><div class="xp-bar-fill" id="xpBarFill" style="width:0%"></div></div>
+          <div class="xp-label" id="xpLabel">0 / 100 XP to next level</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-header" style="margin-top:8px;margin-bottom:28px">
+      <h3 style="text-align:left">🏅 Badges</h3>
+    </div>
+    <div class="gamif-grid" id="badgeGrid"></div>
+
+    <div class="glass chart-card fade-in" style="margin-top:28px">
+      <h3>📅 Weekly Log Activity</h3>
+      <div class="chart-wrap" style="height:180px"><canvas id="weeklyActivityChart"></canvas></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     ANALYTICS SECTION
+     ============================================================ -->
+<section id="analytics" class="section">
+  <div class="container">
+    <div class="section-header fade-in">
+      <div class="section-tag">Insights</div>
+      <h2>📊 Health Analytics</h2>
+      <p>Visual insights from your tracked data. Log more days to see richer patterns.</p>
+    </div>
+
+    <div class="analytics-tabs">
+      <button class="atab active" onclick="switchAnalyticTab('overview',this)">📈 Overview</button>
+      <button class="atab" onclick="switchAnalyticTab('mood',this)">💜 Mood &amp; Energy</button>
+      <button class="atab" onclick="switchAnalyticTab('symptoms',this)">🩺 Symptoms</button>
+      <button class="atab" onclick="switchAnalyticTab('calendar',this)">📅 Calendar</button>
+      <button class="atab" onclick="switchAnalyticTab('planner',this)">🗓️ Planner</button>
+    </div>
+
+    <!-- OVERVIEW TAB -->
+    <div class="atab-panel active" id="tab-overview">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px">
+        <div class="glass chart-card">
+          <h3>⚡ Energy by Phase</h3>
+          <div class="chart-wrap" style="height:200px"><canvas id="energyByPhaseChart"></canvas></div>
+        </div>
+        <div class="glass chart-card">
+          <h3>🩸 Phase Distribution</h3>
+          <div class="chart-wrap" style="height:200px"><canvas id="phaseDistChart"></canvas></div>
+        </div>
+      </div>
+      <div class="glass chart-card" style="margin-top:24px">
+        <h3>📈 Energy Trend (last 14 logs)</h3>
+        <div class="chart-wrap" style="height:220px"><canvas id="energyTrendChart"></canvas></div>
+      </div>
+    </div>
+
+    <!-- MOOD TAB -->
+    <div class="atab-panel" id="tab-mood">
+      <div class="glass chart-card">
+        <h3>💜 Mood Frequency by Phase</h3>
+        <div class="chart-wrap" style="height:280px"><canvas id="moodByPhaseChart"></canvas></div>
+      </div>
+      <div class="glass chart-card" style="margin-top:24px">
+        <h3>⚡ Average Energy per Day of Week</h3>
+        <div class="chart-wrap" style="height:220px"><canvas id="energyDOWChart"></canvas></div>
+      </div>
+    </div>
+
+    <!-- SYMPTOMS TAB -->
+    <div class="atab-panel" id="tab-symptoms">
+      <div class="glass chart-card">
+        <h3>🩺 Top Symptoms Frequency</h3>
+        <div class="chart-wrap" style="height:280px"><canvas id="symptomFreqChart"></canvas></div>
+      </div>
+      <div class="glass chart-card" style="margin-top:24px">
+        <h3>🔍 Symptom–Phase Correlation</h3>
+        <div id="symPhaseCorr"></div>
+      </div>
+    </div>
+
+    <!-- CALENDAR TAB -->
+    <div class="atab-panel" id="tab-calendar">
+      <div class="glass chart-card">
+        <h3>📅 Cycle Calendar (last 3 months)</h3>
+        <div id="heatmapWrap"></div>
+        <div class="heatmap-legend">
+          <div class="hm-legend-item"><div class="hm-dot" style="background:rgba(244,112,150,0.75)"></div> Menstrual</div>
+          <div class="hm-legend-item"><div class="hm-dot" style="background:rgba(245,216,124,0.75)"></div> Follicular</div>
+          <div class="hm-legend-item"><div class="hm-dot" style="background:rgba(140,197,160,0.75)"></div> Ovulation</div>
+          <div class="hm-legend-item"><div class="hm-dot" style="background:rgba(180,158,228,0.75)"></div> Luteal</div>
+          <div class="hm-legend-item"><div class="hm-dot" style="background:rgba(224,127,160,0.07)"></div> No data</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PLANNER TAB -->
+    <div class="atab-panel" id="tab-planner">
+      <div class="glass chart-card" style="margin-bottom:24px">
+        <h3>🎯 Your Productivity Planner</h3>
+        <p style="font-size:0.9rem;margin-bottom:20px">Based on your cycle phase, here's how to optimise your time and energy.</p>
+        <div class="planner-grid">
+          <div class="planner-phase-card planner-card-menstrual">
+            <h4>🩸 Menstrual (Days 1–5)</h4>
+            <p><strong>Energy:</strong> Low — Rest mode</p>
+            <ul>
+              <li>Catch-up on admin, emails, reading</li>
+              <li>Solo, low-stimulation work</li>
+              <li>Avoid big decisions or presentations</li>
+              <li>Journalling &amp; reflection</li>
+            </ul>
+          </div>
+          <div class="planner-phase-card planner-card-follicular">
+            <h4>🌱 Follicular (Days 6–13)</h4>
+            <p><strong>Energy:</strong> Rising — Creative mode</p>
+            <ul>
+              <li>Start new projects, brainstorm</li>
+              <li>Learn new skills, take courses</li>
+              <li>Schedule important meetings</li>
+              <li>Collaborative and creative tasks</li>
+            </ul>
+          </div>
+          <div class="planner-phase-card planner-card-ovulation">
+            <h4>✨ Ovulation (Days 14–16)</h4>
+            <p><strong>Energy:</strong> Peak — Power mode</p>
+            <ul>
+              <li>Presentations, pitches, interviews</li>
+              <li>Negotiations &amp; big decisions</li>
+              <li>High-intensity workouts</li>
+              <li>Social events &amp; networking</li>
+            </ul>
+          </div>
+          <div class="planner-phase-card planner-card-luteal">
+            <h4>🌙 Luteal (Days 17–28)</h4>
+            <p><strong>Energy:</strong> Declining — Detail mode</p>
+            <ul>
+              <li>Detail-oriented, analytical work</li>
+              <li>Editing, reviewing, organising</li>
+              <li>Gentle movement only</li>
+              <li>Prep for next menstrual rest phase</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="glass chart-card">
+        <h3>📆 Your Best Days This Month</h3>
+        <div id="bestDaysWrap">
+          <div class="no-data-msg"><div class="nd-icon">📅</div><p>Enter your last period date in the Tracker to generate your personalised monthly planner.</p></div>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -1218,6 +1922,29 @@ const state = {
 /* ============================================================
    INIT
    ============================================================ */
+/* ============================================================
+   DARK MODE
+   ============================================================ */
+function toggleDarkMode() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const newTheme = isDark ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', newTheme);
+  localStorage.setItem('bloomTheme', newTheme);
+  // update all toggle thumbs (there's only one but updateNavUser re-renders it)
+  document.querySelectorAll('.dark-toggle-thumb').forEach(el => {
+    el.textContent = newTheme === 'dark' ? '🌙' : '☀️';
+  });
+  // re-render charts so they respect new background
+  setTimeout(renderAnalytics, 80);
+}
+
+function initTheme() {
+  const saved = localStorage.getItem('bloomTheme');
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const theme = saved || (prefersDark ? 'dark' : 'light');
+  document.documentElement.setAttribute('data-theme', theme);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   // Set max date to today
   document.getElementById('lastPeriodDate').max = new Date().toISOString().split('T')[0];
@@ -1234,6 +1961,28 @@ document.addEventListener('DOMContentLoaded', () => {
   renderEducation();
   renderHistory();
   initScrollAnimations();
+
+  // ── NEW: Boot auth + gamification systems ──
+  userProfile = loadProfile();
+  initTheme(); // apply saved theme + update thumb
+  updateNavUser();
+  loadProfileForm();
+  refreshStreaks();
+
+  // Show auth modal on first visit if not logged in / not guest
+  const hasVisited = localStorage.getItem('bloomHasVisited');
+  if (!hasVisited) {
+    localStorage.setItem('bloomHasVisited', '1');
+    setTimeout(openAuth, 800); // slight delay so page renders first
+  }
+
+  // Auth modal: default tab
+  document.getElementById('authModal').dataset.tab = 'login';
+
+  // Close modal on backdrop click
+  document.getElementById('authModal').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('authModal')) closeAuth();
+  });
 });
 
 /* ============================================================
@@ -1281,8 +2030,528 @@ function phaseFromCycleDay(day) {
 }
 
 /* ============================================================
-   CHIP RENDERING
+   USER PROFILE & AUTH SYSTEM
    ============================================================ */
+const DEFAULT_PROFILE = {
+  username: null, isGuest: true,
+  age: null, cycleLength: 28, dietType: 'all',
+  activityLevel: 'light', sleepHours: 7, goal: 'track',
+  joinedDate: null,
+  streak: 0, lastLogDate: null, points: 0,
+};
+
+function loadProfile() {
+  const raw = localStorage.getItem('bloomProfile');
+  return raw ? { ...DEFAULT_PROFILE, ...JSON.parse(raw) } : { ...DEFAULT_PROFILE };
+}
+function saveProfileData(p) { localStorage.setItem('bloomProfile', JSON.stringify(p)); }
+
+let userProfile = loadProfile();
+
+/* ---------- AUTH MODAL ---------- */
+function openAuth() { document.getElementById('authModal').classList.remove('hidden'); }
+function closeAuth() { document.getElementById('authModal').classList.add('hidden'); }
+
+function switchAuthTab(tab) {
+  document.getElementById('loginFields').classList.toggle('hidden', tab !== 'login');
+  document.getElementById('signupFields').classList.toggle('hidden', tab !== 'signup');
+  document.getElementById('tabLogin').classList.toggle('active', tab === 'login');
+  document.getElementById('tabSignup').classList.toggle('active', tab === 'signup');
+  document.getElementById('authSubmitBtn').textContent = tab === 'login' ? 'Sign In' : 'Create Account';
+  document.getElementById('authErr').textContent = '';
+  document.getElementById('authModal').dataset.tab = tab;
+}
+
+function doAuth() {
+  const tab = document.getElementById('authModal').dataset.tab || 'login';
+  if (tab === 'login') doLogin(); else doSignup();
+}
+
+function doLogin() {
+  const u = document.getElementById('loginUser').value.trim();
+  const p = document.getElementById('loginPass').value;
+  if (!u || !p) { document.getElementById('authErr').textContent = 'Please fill in all fields.'; return; }
+  const stored = localStorage.getItem('bloomUser_' + u);
+  if (!stored) { document.getElementById('authErr').textContent = 'Username not found. Create an account!'; return; }
+  const user = JSON.parse(stored);
+  if (user.password !== btoa(p)) { document.getElementById('authErr').textContent = 'Incorrect password.'; return; }
+  userProfile = { ...DEFAULT_PROFILE, ...user.profile };
+  userProfile.isGuest = false; userProfile.username = u;
+  saveProfileData(userProfile);
+  closeAuth(); afterLogin();
+}
+
+function doSignup() {
+  const u = document.getElementById('signupUser').value.trim();
+  const p = document.getElementById('signupPass').value;
+  const age = parseInt(document.getElementById('signupAge').value) || null;
+  const cycleLen = parseInt(document.getElementById('signupCycle').value) || 28;
+  const diet = document.getElementById('signupDiet').value;
+  const activity = document.getElementById('signupActivity').value;
+  if (!u || !p) { document.getElementById('authErr').textContent = 'Username and password required.'; return; }
+  if (u.length < 3) { document.getElementById('authErr').textContent = 'Username must be at least 3 characters.'; return; }
+  if (p.length < 4) { document.getElementById('authErr').textContent = 'Password must be at least 4 characters.'; return; }
+  if (localStorage.getItem('bloomUser_' + u)) { document.getElementById('authErr').textContent = 'Username taken. Try another!'; return; }
+  const profile = { ...DEFAULT_PROFILE, username: u, isGuest: false, age, cycleLength: cycleLen, dietType: diet, activityLevel: activity, joinedDate: new Date().toISOString(), streak: 0, points: 0 };
+  localStorage.setItem('bloomUser_' + u, JSON.stringify({ password: btoa(p), profile }));
+  userProfile = profile; saveProfileData(userProfile);
+  closeAuth(); afterLogin();
+}
+
+function doGuest() {
+  userProfile = { ...DEFAULT_PROFILE };
+  saveProfileData(userProfile);
+  closeAuth(); afterLogin();
+}
+
+function doLogout() {
+  userProfile = { ...DEFAULT_PROFILE };
+  saveProfileData(userProfile);
+  updateNavUser(); navTo('hero');
+}
+
+function afterLogin() {
+  updateNavUser(); loadProfileForm(); refreshStreaks(); renderAnalytics();
+}
+
+/* ---------- NAV USER DISPLAY ---------- */
+function updateNavUser() {
+  const el = document.getElementById('navUser');
+  const toggleBtn = `<button class="dark-toggle" onclick="toggleDarkMode()" title="Toggle dark mode" aria-label="Toggle dark mode"><div class="dark-toggle-thumb" id="darkThumb">${document.documentElement.getAttribute('data-theme')==='dark'?'🌙':'☀️'}</div></button>`;
+  if (userProfile.isGuest || !userProfile.username) {
+    el.innerHTML = `${toggleBtn}<button class="btn btn-primary btn-sm" onclick="openAuth()">Sign In</button>`;
+  } else {
+    const initial = userProfile.username[0].toUpperCase();
+    el.innerHTML = `${toggleBtn}
+      <span class="nav-username">${userProfile.username}</span>
+      <button class="nav-avatar" onclick="navTo('profile')" title="Profile">${initial}</button>
+      <button class="nav-logout" onclick="doLogout()">Sign out</button>`;
+    document.querySelectorAll('.nav-link').forEach(l => { if (l.textContent === 'Profile') l.classList.remove('hidden'); });
+  }
+}
+
+/* ---------- PROFILE FORM ---------- */
+function loadProfileForm() {
+  const p = userProfile;
+  const nameEl = document.getElementById('profileDisplayName');
+  const avatarEl = document.getElementById('profileAvatarBig');
+  if (nameEl) nameEl.textContent = p.username || 'Guest';
+  if (avatarEl) avatarEl.textContent = p.username ? p.username[0].toUpperCase() : '🌸';
+
+  const since = document.getElementById('profileSince');
+  if (since) since.textContent = p.joinedDate ? 'Member since ' + new Date(p.joinedDate).toLocaleDateString('en-GB',{month:'long',year:'numeric'}) : 'Guest mode';
+
+  // Stats
+  const history = JSON.parse(localStorage.getItem('bloomHistory') || '[]');
+  const el = id => document.getElementById(id);
+  if (el('pstatDays'))   el('pstatDays').textContent   = history.length;
+  if (el('pstatStreak')) el('pstatStreak').textContent = p.streak || 0;
+  if (el('pstatPoints')) el('pstatPoints').textContent = p.points || 0;
+
+  if (el('profAge'))      el('profAge').value      = p.age || '';
+  if (el('profCycle'))    el('profCycle').value    = p.cycleLength || 28;
+  if (el('profDiet'))     el('profDiet').value     = p.dietType || 'all';
+  if (el('profActivity')) el('profActivity').value = p.activityLevel || 'light';
+  if (el('profSleep'))    el('profSleep').value    = p.sleepHours || 7;
+  if (el('profGoal'))     el('profGoal').value     = p.goal || 'track';
+}
+
+function saveProfile() {
+  userProfile.age           = parseInt(document.getElementById('profAge').value) || null;
+  userProfile.cycleLength   = parseInt(document.getElementById('profCycle').value) || 28;
+  userProfile.dietType      = document.getElementById('profDiet').value;
+  userProfile.activityLevel = document.getElementById('profActivity').value;
+  userProfile.sleepHours    = parseFloat(document.getElementById('profSleep').value) || 7;
+  userProfile.goal          = document.getElementById('profGoal').value;
+  saveProfileData(userProfile);
+  // Persist into user store if logged in
+  if (userProfile.username) {
+    const stored = localStorage.getItem('bloomUser_' + userProfile.username);
+    if (stored) {
+      const obj = JSON.parse(stored);
+      obj.profile = userProfile;
+      localStorage.setItem('bloomUser_' + userProfile.username, JSON.stringify(obj));
+    }
+  }
+  const toast = document.getElementById('profSavedToast');
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2000);
+  loadProfileForm();
+}
+
+/* ============================================================
+   STREAK & GAMIFICATION SYSTEM
+   ============================================================ */
+const BADGES = [
+  { id:'first_log',   icon:'🌸', name:'First Bloom',    desc:'Log your first day',        threshold: 1,  type:'logs'   },
+  { id:'week_streak', icon:'🔥', name:'Week Warrior',   desc:'7-day logging streak',      threshold: 7,  type:'streak' },
+  { id:'two_weeks',   icon:'💎', name:'Fortnight Flow', desc:'14-day logging streak',     threshold: 14, type:'streak' },
+  { id:'month_log',   icon:'🏆', name:'Cycle Master',   desc:'Log 28+ days total',        threshold: 28, type:'logs'   },
+  { id:'ten_logs',    icon:'⭐', name:'Star Tracker',   desc:'10 total entries',          threshold: 10, type:'logs'   },
+  { id:'hundred_pts', icon:'✨', name:'Point Collector', desc:'Earn 100 Bloom Points',    threshold: 100,type:'points' },
+  { id:'five_streak', icon:'🌊', name:'Flow Keeper',    desc:'5-day streak',              threshold: 5,  type:'streak' },
+  { id:'all_phases',  icon:'🌈', name:'Phase Explorer', desc:'Track all 4 phases',        threshold: 4,  type:'phases' },
+];
+
+const LEVELS = [
+  { name:'🌱 Seedling', min:0,   max:99  },
+  { name:'🌿 Sprout',   min:100, max:249 },
+  { name:'🌺 Blooming', min:250, max:499 },
+  { name:'🌸 Flourishing', min:500, max:999 },
+  { name:'🌟 Radiant', min:1000, max:Infinity },
+];
+
+function getLevel(pts) { return LEVELS.find(l => pts >= l.min && pts <= l.max) || LEVELS[0]; }
+
+function updateStreak() {
+  const today = new Date().toDateString();
+  const yesterday = new Date(Date.now() - 86400000).toDateString();
+  if (userProfile.lastLogDate === today) return; // already logged today
+  if (userProfile.lastLogDate === yesterday) {
+    userProfile.streak = (userProfile.streak || 0) + 1;
+  } else {
+    userProfile.streak = 1;
+  }
+  userProfile.lastLogDate = today;
+  userProfile.points = (userProfile.points || 0) + 10;
+  saveProfileData(userProfile);
+  refreshStreaks();
+}
+
+function refreshStreaks() {
+  const history = JSON.parse(localStorage.getItem('bloomHistory') || '[]');
+  const streak  = userProfile.streak || 0;
+  const pts     = userProfile.points || 0;
+  const level   = getLevel(pts);
+  const lvlNext = LEVELS[LEVELS.indexOf(level) + 1];
+  const xpPct   = lvlNext ? Math.round(((pts - level.min) / (lvlNext.min - level.min)) * 100) : 100;
+
+  const el = id => document.getElementById(id);
+  if (el('streakCount'))    el('streakCount').textContent = streak;
+  if (el('streakBarFill'))  el('streakBarFill').style.width = Math.min((streak / 30) * 100, 100) + '%';
+  if (el('streakBarLabel')) el('streakBarLabel').textContent = streak === 0
+    ? 'Log today to start your streak!'
+    : streak >= 30 ? '🎉 You are on fire! 30+ day streak!'
+    : `${30 - streak} more days to reach 30!`;
+
+  if (el('totalPoints'))  el('totalPoints').textContent = pts;
+  if (el('levelPill'))    el('levelPill').textContent   = level.name;
+  if (el('xpBarFill'))    el('xpBarFill').style.width   = xpPct + '%';
+  if (el('xpLabel'))      el('xpLabel').textContent     = lvlNext
+    ? `${pts - level.min} / ${lvlNext.min - level.min} XP to ${lvlNext.name}`
+    : '🌟 Max level reached!';
+
+  // Badges
+  const phases = new Set(history.map(e => e.phase));
+  const unlocked = new Set(userProfile.unlockedBadges || []);
+
+  BADGES.forEach(b => {
+    let earned = false;
+    if (b.type === 'logs')   earned = history.length >= b.threshold;
+    if (b.type === 'streak') earned = streak >= b.threshold;
+    if (b.type === 'points') earned = pts >= b.threshold;
+    if (b.type === 'phases') earned = phases.size >= b.threshold;
+    if (earned) unlocked.add(b.id);
+  });
+
+  userProfile.unlockedBadges = [...unlocked];
+  saveProfileData(userProfile);
+
+  const grid = el('badgeGrid');
+  if (grid) grid.innerHTML = BADGES.map(b => {
+    const isUnlocked = unlocked.has(b.id);
+    return `<div class="badge-card ${isUnlocked ? '' : 'locked'}">
+      <div class="badge-icon">${b.icon}</div>
+      <div class="badge-name">${b.name}</div>
+      <div class="badge-desc">${b.desc}</div>
+      ${isUnlocked ? '<div class="badge-unlocked-tag">✅ Unlocked</div>' : '<div class="badge-unlocked-tag" style="background:var(--rose-pale);color:var(--ink-muted)">🔒 Locked</div>'}
+    </div>`;
+  }).join('');
+
+  // Weekly activity chart (last 7 days)
+  const weekDays = [];
+  const weekCounts = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    const label = d.toLocaleDateString('en-GB',{weekday:'short'});
+    weekDays.push(label);
+    const ds = d.toISOString().split('T')[0];
+    weekCounts.push(history.filter(e => e.date && e.date.startsWith(ds)).length);
+  }
+
+  const ctx = el('weeklyActivityChart');
+  if (ctx) {
+    if (ctx._chartInst) ctx._chartInst.destroy();
+    ctx._chartInst = new Chart(ctx, {
+      type:'bar',
+      data: { labels: weekDays, datasets:[{ label:'Logs', data: weekCounts,
+        backgroundColor: weekCounts.map(c => c > 0 ? 'rgba(224,127,160,0.75)' : 'rgba(224,127,160,0.15)'),
+        borderRadius: 8, borderSkipped: false }] },
+      options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false} },
+        scales:{ y:{ beginAtZero:true, max:3, ticks:{stepSize:1}, grid:{color:'rgba(155,138,165,0.1)'} },
+                 x:{ grid:{display:false} } } }
+    });
+  }
+
+  // Update profile stats
+  loadProfileForm();
+}
+
+/* ============================================================
+   ANALYTICS ENGINE
+   ============================================================ */
+const CHART_COLORS = {
+  menstrual:  'rgba(244,112,150,0.75)',
+  follicular: 'rgba(245,216,124,0.75)',
+  ovulation:  'rgba(140,197,160,0.75)',
+  luteal:     'rgba(180,158,228,0.75)',
+};
+const CHART_BORDERS = {
+  menstrual: 'rgb(224,80,120)', follicular:'rgb(210,175,60)',
+  ovulation:'rgb(100,165,120)', luteal:'rgb(140,100,200)',
+};
+
+let analyticsCharts = {};
+
+function destroyChart(id) { if (analyticsCharts[id]) { analyticsCharts[id].destroy(); delete analyticsCharts[id]; } }
+
+function renderAnalytics() {
+  const history = JSON.parse(localStorage.getItem('bloomHistory') || '[]');
+  if (history.length === 0) return;
+
+  // --- Energy by Phase bar chart ---
+  destroyChart('energyByPhase');
+  const phases = ['menstrual','follicular','ovulation','luteal'];
+  const energyByPhase = phases.map(p => {
+    const entries = history.filter(e => e.phase === p);
+    return entries.length ? Math.round(entries.reduce((a,e) => a + e.energy, 0) / entries.length) : 0;
+  });
+  const ctxEBP = document.getElementById('energyByPhaseChart');
+  if (ctxEBP) analyticsCharts.energyByPhase = new Chart(ctxEBP, {
+    type:'bar',
+    data:{ labels:['🩸 Menstrual','🌱 Follicular','✨ Ovulation','🌙 Luteal'],
+      datasets:[{ data: energyByPhase,
+        backgroundColor: phases.map(p => CHART_COLORS[p]),
+        borderColor: phases.map(p => CHART_BORDERS[p]),
+        borderWidth:2, borderRadius:10, borderSkipped:false }] },
+    options:{ responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false} },
+      scales:{ y:{ beginAtZero:true, max:100, ticks:{callback:v=>v+'%'}, grid:{color:'rgba(155,138,165,0.1)'} },
+               x:{ grid:{display:false} } } }
+  });
+
+  // --- Phase distribution doughnut ---
+  destroyChart('phaseDist');
+  const phaseCounts = phases.map(p => history.filter(e => e.phase === p).length);
+  const ctxPD = document.getElementById('phaseDistChart');
+  if (ctxPD && phaseCounts.some(c=>c>0)) analyticsCharts.phaseDist = new Chart(ctxPD, {
+    type:'doughnut',
+    data:{ labels:['Menstrual','Follicular','Ovulation','Luteal'],
+      datasets:[{ data: phaseCounts,
+        backgroundColor: phases.map(p => CHART_COLORS[p]),
+        borderColor: phases.map(p => CHART_BORDERS[p]),
+        borderWidth:2, hoverOffset:8 }] },
+    options:{ responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{position:'bottom', labels:{font:{family:'DM Sans'},padding:12}} },
+      cutout:'60%' }
+  });
+
+  // --- Energy trend line ---
+  destroyChart('energyTrend');
+  const recent = [...history].reverse().slice(-14);
+  const ctxET = document.getElementById('energyTrendChart');
+  if (ctxET && recent.length > 0) analyticsCharts.energyTrend = new Chart(ctxET, {
+    type:'line',
+    data:{ labels: recent.map(e => new Date(e.date).toLocaleDateString('en-GB',{day:'numeric',month:'short'})),
+      datasets:[{ label:'Energy %', data: recent.map(e=>e.energy),
+        borderColor:'rgb(224,127,160)', backgroundColor:'rgba(224,127,160,0.1)',
+        borderWidth:2.5, pointBackgroundColor:'rgb(224,127,160)', pointRadius:5,
+        tension:0.4, fill:true }] },
+    options:{ responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false} },
+      scales:{ y:{beginAtZero:true,max:100,ticks:{callback:v=>v+'%'},grid:{color:'rgba(155,138,165,0.1)'}},
+               x:{grid:{display:false}} } }
+  });
+
+  // --- Mood by phase grouped bar ---
+  destroyChart('moodByPhase');
+  const topMoods = ['anxious','calm','irritable','energetic','depressed','motivated','overwhelmed','content'];
+  const moodDatasets = phases.map((p,i) => {
+    const phaseEntries = history.filter(e => e.phase === p);
+    return {
+      label: ['Menstrual','Follicular','Ovulation','Luteal'][i],
+      data: topMoods.map(m => phaseEntries.filter(e => e.moods && e.moods.includes(m)).length),
+      backgroundColor: CHART_COLORS[p], borderColor: CHART_BORDERS[p], borderWidth:1.5, borderRadius:6,
+    };
+  });
+  const ctxMBP = document.getElementById('moodByPhaseChart');
+  if (ctxMBP) analyticsCharts.moodByPhase = new Chart(ctxMBP, {
+    type:'bar',
+    data:{ labels: topMoods.map(m => MOODS.find(x=>x.id===m)?.label || m),
+      datasets: moodDatasets },
+    options:{ responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{position:'bottom',labels:{font:{family:'DM Sans'},padding:10}} },
+      scales:{ y:{beginAtZero:true,ticks:{stepSize:1},grid:{color:'rgba(155,138,165,0.1)'}},
+               x:{grid:{display:false},ticks:{font:{size:10}}} } }
+  });
+
+  // --- Energy by day of week ---
+  destroyChart('energyDOW');
+  const dows = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const dowEnergy = dows.map((_,di) => {
+    const entries = history.filter(e => new Date(e.date).getDay() === di);
+    return entries.length ? Math.round(entries.reduce((a,e) => a+e.energy,0)/entries.length) : 0;
+  });
+  const ctxDOW = document.getElementById('energyDOWChart');
+  if (ctxDOW) analyticsCharts.energyDOW = new Chart(ctxDOW, {
+    type:'bar',
+    data:{ labels: dows,
+      datasets:[{ label:'Avg Energy', data: dowEnergy,
+        backgroundColor: dowEnergy.map(e => `rgba(201,184,232,${0.3+e/150})`),
+        borderColor:'rgb(160,130,210)', borderWidth:1.5, borderRadius:8, borderSkipped:false }] },
+    options:{ responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{ y:{beginAtZero:true,max:100,ticks:{callback:v=>v+'%'},grid:{color:'rgba(155,138,165,0.1)'}},
+               x:{grid:{display:false}} } }
+  });
+
+  // --- Symptom frequency horizontal bar ---
+  destroyChart('symptomFreq');
+  const symFreq = {};
+  history.forEach(e => (e.symptoms||[]).forEach(s => { symFreq[s] = (symFreq[s]||0)+1; }));
+  const topSyms = Object.entries(symFreq).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  const ctxSF = document.getElementById('symptomFreqChart');
+  if (ctxSF && topSyms.length) analyticsCharts.symptomFreq = new Chart(ctxSF, {
+    type:'bar',
+    data:{ labels: topSyms.map(([id]) => SYMPTOMS.find(x=>x.id===id)?.label || id),
+      datasets:[{ data: topSyms.map(([,c])=>c),
+        backgroundColor:'rgba(244,112,150,0.6)', borderColor:'rgb(224,80,120)',
+        borderWidth:1.5, borderRadius:8 }] },
+    options:{ indexAxis:'y', responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{ x:{beginAtZero:true,ticks:{stepSize:1},grid:{color:'rgba(155,138,165,0.1)'}},
+               y:{grid:{display:false},ticks:{font:{size:11}}} } }
+  });
+
+  // --- Symptom-phase correlation table ---
+  const corrEl = document.getElementById('symPhaseCorr');
+  if (corrEl && topSyms.length) {
+    const rows = topSyms.slice(0,6).map(([id]) => {
+      const label = SYMPTOMS.find(x=>x.id===id)?.label || id;
+      const cells = phases.map(p => {
+        const n = history.filter(e=>e.phase===p && e.symptoms?.includes(id)).length;
+        const total = history.filter(e=>e.phase===p).length || 1;
+        const pct = Math.round((n/total)*100);
+        return `<td style="text-align:center;padding:10px 8px">
+          <div style="width:${Math.max(pct,4)}%;height:8px;border-radius:50px;background:${CHART_COLORS[p]};min-width:4px;margin:0 auto;transition:width 0.6s ease"></div>
+          <div style="font-size:0.72rem;color:var(--ink-muted);margin-top:3px">${pct}%</div></td>`;
+      }).join('');
+      return `<tr><td style="padding:10px 8px;font-size:0.85rem;font-weight:500">${label}</td>${cells}</tr>`;
+    }).join('');
+    corrEl.innerHTML = `<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse">
+      <thead><tr style="border-bottom:1px solid rgba(155,138,165,0.2)">
+        <th style="text-align:left;padding:10px 8px;font-size:0.78rem;color:var(--ink-muted)">Symptom</th>
+        ${phases.map(p=>`<th style="text-align:center;padding:10px 8px;font-size:0.78rem;color:var(--ink-muted)">${PHASE_ICONS[p]} ${PHASE_LABELS[p]}</th>`).join('')}
+      </tr></thead><tbody>${rows}</tbody></table></div>`;
+  }
+
+  // --- Calendar heatmap (90 days) ---
+  renderCalendarHeatmap(history);
+
+  // --- Best days planner ---
+  renderBestDays();
+}
+
+function renderCalendarHeatmap(history) {
+  const wrap = document.getElementById('heatmapWrap');
+  if (!wrap) return;
+  const histMap = {};
+  history.forEach(e => { if (e.date) histMap[e.date.split('T')[0]] = e.phase; });
+
+  const today = new Date(); today.setHours(0,0,0,0);
+  const start = new Date(today); start.setDate(start.getDate() - 89);
+
+  // Align to Sunday
+  const startDay = start.getDay();
+  let html = '<div class="heatmap-grid">';
+  // pad blanks
+  for (let i = 0; i < startDay; i++) html += '<div class="heatmap-day" style="visibility:hidden"></div>';
+  for (let i = 0; i < 90; i++) {
+    const d = new Date(start); d.setDate(start.getDate() + i);
+    const ds = d.toISOString().split('T')[0];
+    const phase = histMap[ds];
+    const dayNum = d.getDate();
+    const isToday = d.toDateString() === today.toDateString();
+    html += `<div class="heatmap-day ${phase ? 'has-entry phase-'+phase : ''}" 
+      style="${isToday?'box-shadow:0 0 0 2px var(--rose-deep);':''}"
+      title="${ds}${phase?' — '+PHASE_LABELS[phase]:''}">
+      ${dayNum}
+    </div>`;
+  }
+  html += '</div>';
+  wrap.innerHTML = html;
+}
+
+function renderBestDays() {
+  const wrap = document.getElementById('bestDaysWrap');
+  if (!wrap) return;
+  if (!state.lastPeriodDate) {
+    wrap.innerHTML = '<div class="no-data-msg"><div class="nd-icon">📅</div><p>Enter your last period date in the Tracker to generate your personalised monthly planner.</p></div>';
+    return;
+  }
+  const cycleLen = userProfile.cycleLength || 28;
+  const today = new Date(); today.setHours(0,0,0,0);
+  const rows = [];
+  for (let i = 0; i < cycleLen; i++) {
+    const d = new Date(today); d.setDate(today.getDate() + i);
+    const period = new Date(state.lastPeriodDate); period.setHours(0,0,0,0);
+    const diff = Math.floor((d - period) / 86400000);
+    const cycleDay = ((diff % cycleLen) + cycleLen) % cycleLen + 1;
+    const ph = phaseFromCycleDay(cycleDay);
+    const labels = { menstrual:'Rest day 🛌', follicular:'Creative work 🎨', ovulation:'Power day ⚡', luteal:'Detail work 🔍' };
+    const colors = { menstrual:'#FDE8EF', follicular:'#FEF9E7', ovulation:'#EAF4E8', luteal:'#F0EBFB' };
+    rows.push(`<div style="display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid rgba(155,138,165,0.1)">
+      <div style="min-width:90px;font-size:0.85rem;color:var(--ink-muted)">${d.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'})}</div>
+      <div style="padding:4px 14px;border-radius:50px;font-size:0.78rem;font-weight:600;background:${colors[ph]};flex:1">${PHASE_ICONS[ph]} Day ${cycleDay} — ${labels[ph]}</div>
+    </div>`);
+  }
+  wrap.innerHTML = `<div style="max-height:380px;overflow-y:auto">${rows.join('')}</div>`;
+}
+
+function switchAnalyticTab(tab, btn) {
+  document.querySelectorAll('.atab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.atab-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-'+tab).classList.add('active');
+  // re-render so charts size correctly
+  setTimeout(renderAnalytics, 80);
+}
+
+/* ============================================================
+   EXTENDED navTo — handles profile / streaks / analytics
+   ============================================================ */
+function navTo(id) {
+  const allSections = ['hero','tracker','results','nutrition','yoga','breathing',
+                       'report','history','education','profile','streaks','analytics'];
+  // Show/hide sections (non-hidden-by-default ones just scroll)
+  const hideable = ['results','nutrition','yoga','breathing','report','profile'];
+  hideable.forEach(s => {
+    const el = document.getElementById(s);
+    if (el) { if (s === id) el.classList.remove('hidden'); }
+  });
+
+  const target = document.getElementById(id);
+  if (target) { target.scrollIntoView({ behavior:'smooth', block:'start' }); }
+
+  // Trigger renders when navigating to new tabs
+  if (id === 'streaks')   { refreshStreaks(); }
+  if (id === 'analytics') { setTimeout(renderAnalytics, 100); }
+  if (id === 'profile')   {
+    document.getElementById('profile').classList.remove('hidden');
+    loadProfileForm();
+  }
+}
+
 function renderChips(containerId, data, type, selectedSet) {
   const container = document.getElementById(containerId);
   container.innerHTML = '';
@@ -1658,6 +2927,8 @@ function saveReport() {
   const history = JSON.parse(localStorage.getItem('bloomHistory') || '[]');
   history.unshift(entry);
   localStorage.setItem('bloomHistory', JSON.stringify(history.slice(0,30)));
+
+  updateStreak(); // 🔥 update streak & points
 
   const toast = document.getElementById('saveToast');
   toast.classList.add('show');
